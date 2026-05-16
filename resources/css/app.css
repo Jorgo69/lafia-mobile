@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] { display: none !important; }
+
+@layer base {
+    html {
+        /* Prevent iOS bounce scroll on body */
+        overscroll-behavior: none;
+        /* Smooth scroll */
+        scroll-behavior: smooth;
+        /* Prevent text size adjust on orientation change */
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        @apply antialiased;
+        /* Prevent pull-to-refresh on mobile */
+        overscroll-behavior-y: contain;
+        /* Tap highlight color */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent iOS input zoom */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+@layer components {
+    /* Mobile page container */
+    .mobile-page {
+        @apply flex flex-col min-h-screen;
+        padding-top: env(safe-area-inset-top, 0);
+    }
+
+    /* Scrollable content area */
+    .mobile-content {
+        @apply flex-1 overflow-y-auto;
+        -webkit-overflow-scrolling: touch;
+        /* Space for tab bar + safe area */
+        padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0));
+    }
+
+    /* Standard page padding */
+    .page-padding {
+        @apply px-4 py-4;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+        @apply fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    /* Bottom sheet backdrop */
+    .sheet-backdrop {
+        @apply fixed inset-0 bg-black/50 z-50;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* Bottom sheet panel */
+    .sheet-panel {
+        @apply fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 rounded-t-3xl;
+        max-height: 85vh;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    /* Sheet drag handle */
+    .sheet-handle {
+        @apply w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-3 mb-2;
+    }
+
+    /* Active press feedback (like native) */
+    .press-feedback {
+        @apply transition-transform duration-75 active:scale-[0.97] active:opacity-90;
+    }
+
+    /* Horizontal scroll without scrollbar */
+    .scroll-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scroll-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Page transition */
+    .page-enter {
+        animation: pageIn 0.2s ease-out;
+    }
+
+    @keyframes pageIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+@layer utilities {
+    .safe-top {
+        padding-top: env(safe-area-inset-top, 0);
+    }
+    .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .safe-x {
+        padding-left: env(safe-area-inset-left, 0);
+        padding-right: env(safe-area-inset-right, 0);
+    }
+
+    /* Livewire loading fade */
+    [wire\:loading\.class] {
+        transition: opacity 0.15s ease;
+    }
+
+    /* Smooth list item appearance */
+    .list-fade-in > * {
+        animation: listIn 0.15s ease-out both;
+    }
+    .list-fade-in > *:nth-child(1) { animation-delay: 0ms; }
+    .list-fade-in > *:nth-child(2) { animation-delay: 30ms; }
+    .list-fade-in > *:nth-child(3) { animation-delay: 60ms; }
+    .list-fade-in > *:nth-child(4) { animation-delay: 90ms; }
+    .list-fade-in > *:nth-child(5) { animation-delay: 120ms; }
+
+    @keyframes listIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PIN pad shake on error */
+    .animate-shake {
+        animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-8px); }
+        40% { transform: translateX(8px); }
+        60% { transform: translateX(-6px); }
+        80% { transform: translateX(6px); }
+    }
+}

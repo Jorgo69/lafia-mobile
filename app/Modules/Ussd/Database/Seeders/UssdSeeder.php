@@ -1,0 +1,572 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Ussd\Database\Seeders;
+
+use App\Modules\Ussd\Models\UssdCode;
+use Illuminate\Database\Seeder;
+
+final class UssdSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $codes = [
+            // ============================================================
+            // MTN BENIN
+            // ============================================================
+
+            // --- Mobile Money (MoMo) ---
+            [
+                'operator' => 'mtn',
+                'category' => 'mobile_money',
+                'action_type' => 'menu',
+                'slug' => 'mtn-momo-menu',
+                'label' => 'Menu MoMo',
+                'description' => 'Acceder au menu principal Mobile Money',
+                'code' => '*880#',
+                'params' => null,
+                'steps' => ['Composez *880#', 'Le menu MoMo s\'affiche', 'Choisissez votre operation'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'mobile_money',
+                'action_type' => 'guided',
+                'slug' => 'mtn-momo-envoyer',
+                'label' => 'Envoyer de l\'argent',
+                'description' => 'Transferer de l\'argent a un proche',
+                'code' => '*880*1*{numero}*{montant}*{code_secret}#',
+                'params' => [
+                    ['key' => 'numero', 'label' => 'Numero du destinataire', 'type' => 'tel', 'placeholder' => '01XXXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '1000'],
+                    ['key' => 'code_secret', 'label' => 'Code secret MoMo', 'type' => 'password', 'placeholder' => '****'],
+                ],
+                'steps' => ['Entrez le numero du destinataire', 'Entrez le montant', 'Entrez votre code secret', 'Confirmez l\'envoi'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'mobile_money',
+                'action_type' => 'direct',
+                'slug' => 'mtn-momo-solde',
+                'label' => 'Solde MoMo',
+                'description' => 'Consulter votre solde Mobile Money',
+                'code' => '*880*0#',
+                'params' => null,
+                'steps' => ['Composez *880*0#', 'Votre solde s\'affiche'],
+                'sort_order' => 3,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'mobile_money',
+                'action_type' => 'guided',
+                'slug' => 'mtn-momo-retrait',
+                'label' => 'Retirer de l\'argent',
+                'description' => 'Retrait chez un agent MoMo',
+                'code' => '*880*2*{numero_agent}*{montant}*{code_secret}#',
+                'params' => [
+                    ['key' => 'numero_agent', 'label' => 'Numero de l\'agent', 'type' => 'tel', 'placeholder' => '01XXXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '5000'],
+                    ['key' => 'code_secret', 'label' => 'Code secret MoMo', 'type' => 'password', 'placeholder' => '****'],
+                ],
+                'steps' => ['Allez chez un agent MoMo', 'Entrez le numero de l\'agent', 'Entrez le montant', 'Entrez votre code secret'],
+                'sort_order' => 4,
+            ],
+
+            // --- Forfaits MTN ---
+            [
+                'operator' => 'mtn',
+                'category' => 'forfait',
+                'action_type' => 'menu',
+                'slug' => 'mtn-forfait-menu',
+                'label' => 'Acheter un forfait',
+                'description' => 'Acceder aux forfaits internet et appels',
+                'code' => '*123#',
+                'params' => null,
+                'steps' => ['Composez *123#', 'Choisissez Internet ou Appels', 'Selectionnez votre forfait'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'forfait',
+                'action_type' => 'direct',
+                'slug' => 'mtn-forfait-statut',
+                'label' => 'Statut forfait internet',
+                'description' => 'Voir votre forfait internet restant',
+                'code' => '*123*2#',
+                'params' => null,
+                'steps' => ['Composez *123*2#', 'Votre forfait restant s\'affiche'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'forfait',
+                'action_type' => 'menu',
+                'slug' => 'mtn-services-menu',
+                'label' => 'Tous les services MTN',
+                'description' => 'Liste complete des produits et services',
+                'code' => '*199#',
+                'params' => null,
+                'steps' => ['Composez *199#', 'Parcourez les services disponibles'],
+                'sort_order' => 3,
+            ],
+
+            // --- Compte MTN ---
+            [
+                'operator' => 'mtn',
+                'category' => 'compte',
+                'action_type' => 'direct',
+                'slug' => 'mtn-solde-credit',
+                'label' => 'Solde credit',
+                'description' => 'Consulter votre credit appel',
+                'code' => '*124#',
+                'params' => null,
+                'steps' => ['Composez *124#', 'Votre solde s\'affiche'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'compte',
+                'action_type' => 'guided',
+                'slug' => 'mtn-recharge',
+                'label' => 'Recharger du credit',
+                'description' => 'Recharger avec une carte de recharge',
+                'code' => '*126*{code_recharge}#',
+                'params' => [
+                    ['key' => 'code_recharge', 'label' => 'Code de recharge', 'type' => 'number', 'placeholder' => 'Code sur la carte'],
+                ],
+                'steps' => ['Grattez votre carte de recharge', 'Entrez le code', 'Votre credit est recharge'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'compte',
+                'action_type' => 'direct',
+                'slug' => 'mtn-mon-numero',
+                'label' => 'Mon numero',
+                'description' => 'Afficher votre propre numero',
+                'code' => '*888#',
+                'params' => null,
+                'steps' => ['Composez *888#', 'Votre numero s\'affiche'],
+                'sort_order' => 3,
+            ],
+
+            // --- Factures MTN ---
+            [
+                'operator' => 'mtn',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'mtn-sbee-prepaye',
+                'label' => 'Recharger compteur SBEE',
+                'description' => 'Crediter un compteur prepaye SBEE via MoMo',
+                'code' => '*400#',
+                'params' => [
+                    ['key' => 'numero_compteur', 'label' => 'Numero du compteur', 'type' => 'number', 'placeholder' => 'Ex: 04152XXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '5000'],
+                ],
+                'steps' => [
+                    'Composez *400#',
+                    'Choisissez 2 pour MoMoPay',
+                    'Selectionnez 3 pour SBEE',
+                    'Choisissez 1 pour Recharge SBEE',
+                    'Choisissez 1 pour Nouvel Achat',
+                    'Entrez le numero du compteur',
+                    'Entrez le montant',
+                    'Confirmez avec votre code secret MoMo',
+                ],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'mtn-sbee-postpaye',
+                'label' => 'Payer facture SBEE',
+                'description' => 'Payer une facture SBEE postpayee via MoMo',
+                'code' => '*400#',
+                'params' => [
+                    ['key' => 'reference', 'label' => 'Reference facture SBEE', 'type' => 'text', 'placeholder' => 'Sur votre facture'],
+                ],
+                'steps' => [
+                    'Composez *400#',
+                    'Choisissez 2 pour MoMoPay',
+                    'Selectionnez 3 pour SBEE',
+                    'Choisissez 2 pour Facture SBEE',
+                    'Entrez votre reference de facture',
+                    'Confirmez avec votre code secret MoMo',
+                ],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'mtn-soneb',
+                'label' => 'Payer facture SONEB',
+                'description' => 'Payer votre facture d\'eau via MoMo',
+                'code' => '*400#',
+                'params' => [
+                    ['key' => 'reference', 'label' => 'Reference SONEB (14 caracteres)', 'type' => 'text', 'placeholder' => '12 chiffres + 2 lettres'],
+                ],
+                'steps' => [
+                    'Composez *400#',
+                    'Choisissez 2 pour MoMoPay',
+                    'Selectionnez 4 pour SONEB',
+                    'Entrez votre reference client (14 caracteres)',
+                    'Selectionnez la facture a payer',
+                    'Confirmez avec votre code secret MoMo',
+                ],
+                'sort_order' => 3,
+            ],
+            [
+                'operator' => 'mtn',
+                'category' => 'facture',
+                'action_type' => 'menu',
+                'slug' => 'mtn-paiement-marchand',
+                'label' => 'Payer un marchand',
+                'description' => 'Paiement marchand via MoMo',
+                'code' => '*880*3#',
+                'params' => null,
+                'steps' => ['Composez *880*3#', 'Entrez le code marchand', 'Entrez le montant', 'Confirmez'],
+                'sort_order' => 4,
+            ],
+
+            // ============================================================
+            // MOOV AFRICA BENIN
+            // ============================================================
+
+            // --- Mobile Money (Moov Money) ---
+            [
+                'operator' => 'moov',
+                'category' => 'mobile_money',
+                'action_type' => 'menu',
+                'slug' => 'moov-money-menu',
+                'label' => 'Menu Moov Money',
+                'description' => 'Acceder au menu principal Moov Money',
+                'code' => '*855#',
+                'params' => null,
+                'steps' => ['Composez *855#', 'Le menu Moov Money s\'affiche', 'Choisissez votre operation'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'mobile_money',
+                'action_type' => 'guided',
+                'slug' => 'moov-money-envoyer',
+                'label' => 'Envoyer de l\'argent',
+                'description' => 'Transferer de l\'argent a un proche',
+                'code' => '*855*1*1*1*{numero}*{numero}*{montant}*{code_secret}#',
+                'params' => [
+                    ['key' => 'numero', 'label' => 'Numero du destinataire', 'type' => 'tel', 'placeholder' => '01XXXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '1000'],
+                    ['key' => 'code_secret', 'label' => 'Code secret', 'type' => 'password', 'placeholder' => '****'],
+                ],
+                'steps' => ['Entrez le numero du destinataire', 'Entrez le montant', 'Entrez votre code secret', 'Confirmez l\'envoi'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'mobile_money',
+                'action_type' => 'guided',
+                'slug' => 'moov-money-retrait',
+                'label' => 'Retirer de l\'argent',
+                'description' => 'Retrait chez un agent Moov Money',
+                'code' => '*855*2*1*{numero_agent}*{montant}*{code_secret}#',
+                'params' => [
+                    ['key' => 'numero_agent', 'label' => 'Numero de l\'agent', 'type' => 'tel', 'placeholder' => '01XXXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '5000'],
+                    ['key' => 'code_secret', 'label' => 'Code secret', 'type' => 'password', 'placeholder' => '****'],
+                ],
+                'steps' => ['Allez chez un agent Moov Money', 'Entrez le numero de l\'agent', 'Entrez le montant', 'Entrez votre code secret'],
+                'sort_order' => 3,
+            ],
+
+            // --- Forfaits Moov ---
+            [
+                'operator' => 'moov',
+                'category' => 'forfait',
+                'action_type' => 'menu',
+                'slug' => 'moov-forfait-internet',
+                'label' => 'Forfait internet',
+                'description' => 'Acheter un forfait internet',
+                'code' => '*123#',
+                'params' => null,
+                'steps' => ['Composez *123#', 'Choisissez votre forfait', 'Validez l\'achat'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'forfait',
+                'action_type' => 'direct',
+                'slug' => 'moov-forfait-partage',
+                'label' => 'Partager mon forfait',
+                'description' => 'Partager votre forfait avec un proche',
+                'code' => '*155#',
+                'params' => null,
+                'steps' => ['Composez *155#', 'Choisissez le forfait a partager', 'Entrez le numero'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'forfait',
+                'action_type' => 'direct',
+                'slug' => 'moov-forfait-switch',
+                'label' => 'Switcher forfait',
+                'description' => 'Convertir forfait internet en appel ou inverse',
+                'code' => '*199*8#',
+                'params' => null,
+                'steps' => ['Composez *199*8#', 'Choisissez la conversion', 'Votre forfait est converti'],
+                'sort_order' => 3,
+            ],
+
+            // --- Compte Moov ---
+            [
+                'operator' => 'moov',
+                'category' => 'compte',
+                'action_type' => 'direct',
+                'slug' => 'moov-solde-credit',
+                'label' => 'Solde credit',
+                'description' => 'Consulter votre credit appel',
+                'code' => '*104#',
+                'params' => null,
+                'steps' => ['Composez *104#', 'Votre solde s\'affiche'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'compte',
+                'action_type' => 'direct',
+                'slug' => 'moov-solde-data',
+                'label' => 'Solde forfait internet',
+                'description' => 'Voir votre forfait data restant',
+                'code' => '*612#',
+                'params' => null,
+                'steps' => ['Composez *612#', 'Vos forfaits actifs s\'affichent'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'compte',
+                'action_type' => 'guided',
+                'slug' => 'moov-recharge',
+                'label' => 'Recharger du credit',
+                'description' => 'Recharger avec une carte',
+                'code' => '*100*{code_recharge}#',
+                'params' => [
+                    ['key' => 'code_recharge', 'label' => 'Code de recharge', 'type' => 'number', 'placeholder' => 'Code sur la carte'],
+                ],
+                'steps' => ['Grattez votre carte de recharge', 'Entrez le code', 'Votre credit est recharge'],
+                'sort_order' => 3,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'compte',
+                'action_type' => 'menu',
+                'slug' => 'moov-codes-utiles',
+                'label' => 'Tous les codes utiles',
+                'description' => 'Infos forfaits et services',
+                'code' => '*620#',
+                'params' => null,
+                'steps' => ['Composez *620#', 'Parcourez les infos disponibles'],
+                'sort_order' => 4,
+            ],
+
+            // --- Factures Moov ---
+            [
+                'operator' => 'moov',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'moov-sbee-prepaye',
+                'label' => 'Recharger compteur SBEE',
+                'description' => 'Crediter un compteur prepaye SBEE via Moov Money',
+                'code' => '*855*4*2#',
+                'params' => [
+                    ['key' => 'numero_compteur', 'label' => 'Numero du compteur', 'type' => 'number', 'placeholder' => 'Ex: 04152XXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '5000'],
+                ],
+                'steps' => [
+                    'Composez *855*4*2#',
+                    'Choisissez Recharge prepayee',
+                    'Entrez le numero du compteur',
+                    'Entrez le montant',
+                    'Confirmez avec votre code secret Moov Money',
+                    'Recevez le code STS (20 chiffres) par SMS',
+                ],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'moov-sbee-postpaye',
+                'label' => 'Payer facture SBEE',
+                'description' => 'Payer une facture SBEE postpayee via Moov Money',
+                'code' => '*855*4*2#',
+                'params' => [
+                    ['key' => 'reference', 'label' => 'Reference facture SBEE', 'type' => 'text', 'placeholder' => 'Sur votre facture'],
+                ],
+                'steps' => [
+                    'Composez *855*4*2#',
+                    'Choisissez Facture postpayee',
+                    'Entrez votre reference de facture',
+                    'Confirmez avec votre code secret Moov Money',
+                    'Telechargez votre quittance via le lien recu',
+                ],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'facture',
+                'action_type' => 'guided',
+                'slug' => 'moov-soneb',
+                'label' => 'Payer facture SONEB',
+                'description' => 'Payer votre facture d\'eau via Moov Money',
+                'code' => '*855*4*1#',
+                'params' => [
+                    ['key' => 'reference', 'label' => 'Reference SONEB (14 caracteres)', 'type' => 'text', 'placeholder' => '12 chiffres + 2 lettres'],
+                ],
+                'steps' => [
+                    'Composez *855*4*1#',
+                    'Entrez votre reference client SONEB',
+                    'Selectionnez la facture a payer',
+                    'Confirmez avec votre code secret Moov Money',
+                ],
+                'sort_order' => 3,
+            ],
+            [
+                'operator' => 'moov',
+                'category' => 'facture',
+                'action_type' => 'menu',
+                'slug' => 'moov-paiement-factures',
+                'label' => 'Autres factures',
+                'description' => 'Autres paiements via Moov Money',
+                'code' => '*855*4#',
+                'params' => null,
+                'steps' => ['Composez *855*4#', 'Choisissez le type de facture', 'Suivez les instructions'],
+                'sort_order' => 4,
+            ],
+
+            // ============================================================
+            // CELTIIS BENIN
+            // ============================================================
+
+            // --- Mobile Money (Celtiis Cash) ---
+            [
+                'operator' => 'celtiis',
+                'category' => 'mobile_money',
+                'action_type' => 'menu',
+                'slug' => 'celtiis-cash-menu',
+                'label' => 'Menu Celtiis Cash',
+                'description' => 'Acceder au menu Celtiis Cash',
+                'code' => '*889#',
+                'params' => null,
+                'steps' => ['Composez *889#', 'Le menu Celtiis Cash s\'affiche'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'celtiis',
+                'category' => 'mobile_money',
+                'action_type' => 'guided',
+                'slug' => 'celtiis-cash-envoyer',
+                'label' => 'Envoyer de l\'argent',
+                'description' => 'Transferer de l\'argent via Celtiis Cash',
+                'code' => '*889*1*{numero}*{montant}*{code_secret}#',
+                'params' => [
+                    ['key' => 'numero', 'label' => 'Numero du destinataire', 'type' => 'tel', 'placeholder' => '01XXXXXXXX'],
+                    ['key' => 'montant', 'label' => 'Montant (FCFA)', 'type' => 'number', 'placeholder' => '1000'],
+                    ['key' => 'code_secret', 'label' => 'Code secret', 'type' => 'password', 'placeholder' => '****'],
+                ],
+                'steps' => ['Entrez le numero', 'Entrez le montant', 'Entrez votre code secret', 'Confirmez'],
+                'sort_order' => 2,
+            ],
+
+            // --- Forfaits Celtiis ---
+            [
+                'operator' => 'celtiis',
+                'category' => 'forfait',
+                'action_type' => 'menu',
+                'slug' => 'celtiis-forfait-internet',
+                'label' => 'Forfait internet',
+                'description' => 'Acheter un forfait internet Celtiis',
+                'code' => '*123#',
+                'params' => null,
+                'steps' => ['Composez *123#', 'Choisissez votre forfait', 'Validez'],
+                'sort_order' => 1,
+            ],
+
+            // --- Compte Celtiis ---
+            [
+                'operator' => 'celtiis',
+                'category' => 'compte',
+                'action_type' => 'direct',
+                'slug' => 'celtiis-solde-credit',
+                'label' => 'Solde credit',
+                'description' => 'Consulter votre credit',
+                'code' => '*104#',
+                'params' => null,
+                'steps' => ['Composez *104#', 'Votre solde s\'affiche'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'celtiis',
+                'category' => 'compte',
+                'action_type' => 'guided',
+                'slug' => 'celtiis-recharge',
+                'label' => 'Recharger du credit',
+                'description' => 'Recharger avec une carte',
+                'code' => '*100*{code_recharge}#',
+                'params' => [
+                    ['key' => 'code_recharge', 'label' => 'Code de recharge', 'type' => 'number', 'placeholder' => 'Code sur la carte'],
+                ],
+                'steps' => ['Grattez votre carte', 'Entrez le code', 'Credit recharge'],
+                'sort_order' => 2,
+            ],
+
+            // --- Factures Celtiis ---
+            [
+                'operator' => 'celtiis',
+                'category' => 'facture',
+                'action_type' => 'direct',
+                'slug' => 'celtiis-facture-sbee',
+                'label' => 'Payer facture SBEE',
+                'description' => 'Payer votre facture d\'electricite',
+                'code' => '*889*7#',
+                'params' => null,
+                'steps' => ['Composez *889*7#', 'Suivez les instructions', 'Entrez votre reference SBEE', 'Confirmez'],
+                'sort_order' => 1,
+            ],
+            [
+                'operator' => 'celtiis',
+                'category' => 'facture',
+                'action_type' => 'direct',
+                'slug' => 'celtiis-facture-soneb',
+                'label' => 'Payer facture SONEB',
+                'description' => 'Payer votre facture d\'eau',
+                'code' => '*611*2#',
+                'params' => null,
+                'steps' => ['Composez *611*2#', 'Suivez les instructions', 'Entrez votre reference SONEB', 'Confirmez'],
+                'sort_order' => 2,
+            ],
+            [
+                'operator' => 'celtiis',
+                'category' => 'facture',
+                'action_type' => 'direct',
+                'slug' => 'celtiis-facture-sgds',
+                'label' => 'Payer facture SGDS',
+                'description' => 'Payer votre facture de gestion des dechets',
+                'code' => '*611*3#',
+                'params' => null,
+                'steps' => ['Composez *611*3#', 'Suivez les instructions', 'Confirmez'],
+                'sort_order' => 3,
+            ],
+        ];
+
+        foreach ($codes as $code) {
+            UssdCode::updateOrCreate(
+                ['slug' => $code['slug']],
+                $code,
+            );
+        }
+    }
+}

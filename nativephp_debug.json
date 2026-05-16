@@ -1,0 +1,40 @@
+{
+    "Environment": {
+        "PHP": {
+            "Version": "8.3.6",
+            "Path": "/usr/bin/php8.3"
+        },
+        "Laravel": {
+            "Version": "12.58.0",
+            "ConfigCached": false,
+            "RoutesCached": false,
+            "DebugEnabled": true
+        },
+        "Node": {
+            "Version": "v18.19.1",
+            "Path": "/usr/bin/node"
+        },
+        "NPM": {
+            "Version": "9.2.0",
+            "Path": "/usr/bin/npm"
+        },
+        "OperatingSystem": "Linux"
+    },
+    "NativePHP": {
+        "Versions": {
+            "nativephp/electron": "Not Installed",
+            "nativephp/laravel": "1.3.1.0",
+            "nativephp/php-bin": "Not Installed"
+        },
+        "Configuration": {
+            "Provider": "App\\Providers\\NativeAppServiceProvider",
+            "BuildHooks": {
+                "Pre": [],
+                "Post": []
+            },
+            "NotarizationEnabled": false,
+            "AzureTrustedSigningEnabled": false,
+            "CustomPHPBinary": false
+        }
+    }
+}
