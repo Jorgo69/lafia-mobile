@@ -11,7 +11,7 @@
         <div class="flex items-center gap-2 shrink-0">
             <button
                 wire:click="undoAll"
-                class="text-sm font-bold text-amber-400 press-feedback"
+                class="text-sm font-bold text-warning-400 press-feedback"
             >
                 {{ __('common.undo') }}
             </button>

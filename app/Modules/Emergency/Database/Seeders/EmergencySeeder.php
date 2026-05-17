@@ -61,7 +61,7 @@ final class EmergencySeeder extends Seeder
                 'slug' => 'police-republicaine-national',
                 'category' => EmergencyCategory::POLICE,
                 'type' => EmergencyCenterType::NATIONAL,
-                'phone' => '160',
+                'phone' => '116',
                 'priority' => 85,
                 'routing' => 'nearest_police_station',
             ],

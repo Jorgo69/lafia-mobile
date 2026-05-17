@@ -1,3 +1,4 @@
+@php use App\Livewire\Enums\PharmacyViewMode; @endphp
 <x-mobile-page :title="__('pharma.title')">
     <div class="space-y-4">
 
@@ -15,19 +16,19 @@
 
         {{-- View mode --}}
         <x-segment
-            :options="['guard' => __('pharma.on_guard'), 'all' => __('pharma.all'), 'nearest' => __('pharma.nearest')]"
-            :active="$viewMode"
+            :options="collect($viewModes)->mapWithKeys(fn($m) => [$m->value => $m->label()])->toArray()"
+            :active="$viewMode->value"
             wireClick="setViewMode"
         />
 
         {{-- DE GARDE --}}
-        @if($viewMode === 'guard')
+        @if($viewMode === PharmacyViewMode::GUARD)
             @if($this->onGuard->isNotEmpty())
-                <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-3 border border-green-200 dark:border-green-800">
-                    <div class="text-xs font-semibold text-green-700 dark:text-green-400">
+                <div class="bg-success-50 dark:bg-success-900/20 rounded-2xl p-3 border border-success-200 dark:border-success-800">
+                    <div class="text-xs font-semibold text-success-700 dark:text-success-400">
                         {{ __('pharma.this_week') }} — {{ now()->startOfWeek()->format('d/m') }} au {{ now()->endOfWeek()->format('d/m/Y') }}
                     </div>
-                    <div class="text-xs text-green-600 dark:text-green-500 mt-0.5">
+                    <div class="text-xs text-success-600 dark:text-success-500 mt-0.5">
                         {{ $this->onGuard->count() }} {{ __('pharma.pharmacies') }}
                     </div>
                 </div>
@@ -56,13 +57,13 @@
             @endif
 
         {{-- TOUTES --}}
-        @elseif($viewMode === 'all')
+        @elseif($viewMode === PharmacyViewMode::ALL)
             <div class="relative">
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="searchQuery"
                     placeholder="{{ __('pharma.search') }}"
-                    class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-success-500 focus:border-transparent"
                 />
                 <x-icon name="magnifying-glass" class="w-5 h-5 absolute left-3 top-3.5 text-gray-400" />
             </div>
@@ -80,7 +81,7 @@
             </div>
 
         {{-- PROCHES --}}
-        @elseif($viewMode === 'nearest')
+        @elseif($viewMode === PharmacyViewMode::NEAREST)
             @if($userLat === null)
                 <div
                     x-data="{ loading: true, failed: false }"
@@ -102,8 +103,8 @@
                     </template>
                     <template x-if="failed">
                         <div>
-                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 text-red-400" />
-                            <p class="text-sm text-red-500">{{ __('pharma.location_denied') }}</p>
+                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 text-danger-400" />
+                            <p class="text-sm text-danger-500">{{ __('pharma.location_denied') }}</p>
                             <p class="text-xs mt-1 opacity-70">{{ __('pharma.location_hint') }}</p>
                         </div>
                     </template>

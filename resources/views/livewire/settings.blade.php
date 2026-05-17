@@ -38,6 +38,25 @@
             </div>
         </section>
 
+        {{-- Appels --}}
+        <section>
+            <h3 class="text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">{{ __('common.calls') }}</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
+                <button
+                    wire:click="toggleCallMode"
+                    class="w-full flex items-center justify-between px-4 py-3.5 press-feedback"
+                >
+                    <div>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ __('common.direct_call') }}</span>
+                        <p class="text-xs text-gray-400 mt-0.5">{{ $directCall ? __('common.direct_call_on') : __('common.direct_call_off') }}</p>
+                    </div>
+                    <div role="switch" aria-checked="{{ $directCall ? 'true' : 'false' }}" class="w-11 h-6 rounded-full transition-colors {{ $directCall ? 'bg-danger-500' : 'bg-gray-300' }} relative shrink-0 ml-3">
+                        <div class="absolute top-0.5 {{ $directCall ? 'right-0.5' : 'left-0.5' }} w-5 h-5 bg-white rounded-full shadow transition-all"></div>
+                    </div>
+                </button>
+            </div>
+        </section>
+
         {{-- Securite --}}
         <section>
             <h3 class="text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">
@@ -53,29 +72,21 @@
                         <span class="text-sm font-medium text-gray-900 dark:text-white">{{ __('vault.lock_enabled') }}</span>
                         <p class="text-xs text-gray-400 mt-0.5">{{ __('vault.lock_enabled_desc') }}</p>
                     </div>
-                    <div role="switch" aria-checked="{{ $lockEnabled ? 'true' : 'false' }}" class="w-11 h-6 rounded-full transition-colors {{ $lockEnabled ? 'bg-indigo-500' : 'bg-gray-300' }} relative shrink-0 ml-3">
+                    <div role="switch" aria-checked="{{ $lockEnabled ? 'true' : 'false' }}" class="w-11 h-6 rounded-full transition-colors {{ $lockEnabled ? 'bg-secondary-500' : 'bg-gray-300' }} relative shrink-0 ml-3">
                         <div class="absolute top-0.5 {{ $lockEnabled ? 'right-0.5' : 'left-0.5' }} w-5 h-5 bg-white rounded-full shadow transition-all"></div>
                     </div>
                 </button>
 
                 {{-- Interval (only if lock enabled) --}}
                 @if($lockEnabled)
-                    @php
-                        $intervals = [
-                            '0' => __('vault.lock_every_time'),
-                            '1' => __('vault.lock_1min'),
-                            '5' => __('vault.lock_5min'),
-                            '15' => __('vault.lock_15min'),
-                        ];
-                    @endphp
-                    @foreach($intervals as $value => $label)
+                    @foreach($lockIntervals as $interval)
                         <button
-                            wire:click="setLockInterval('{{ $value }}')"
-                            class="w-full flex items-center justify-between px-4 py-3.5 min-h-[44px] press-feedback"
+                            wire:click="setLockInterval('{{ $interval->value }}')"
+                            class="w-full flex items-center justify-between px-4 py-3.5 min-h-11 press-feedback"
                         >
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
-                            @if($lockInterval === (string) $value)
-                                <x-icon name="check" class="w-5 h-5 text-indigo-500" />
+                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $interval->label() }}</span>
+                            @if($lockInterval === $interval)
+                                <x-icon name="check" class="w-5 h-5 text-secondary-500" />
                             @endif
                         </button>
                     @endforeach
@@ -88,8 +99,8 @@
             <h3 class="text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">{{ __('common.data_management') }}</h3>
 
             @if($showRollbackSuccess)
-                <div class="mb-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl px-4 py-3">
-                    <p class="text-sm text-green-700 dark:text-green-400 font-medium">{{ __('common.rollback_success') }}</p>
+                <div class="mb-3 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-2xl px-4 py-3">
+                    <p class="text-sm text-success-700 dark:text-success-400 font-medium">{{ __('common.rollback_success') }}</p>
                 </div>
             @endif
 
@@ -98,19 +109,19 @@
                     <div class="flex items-center justify-between px-4 py-3">
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $ds['label'] }}</p>
-                            <p class="text-[11px] text-gray-400">v{{ $ds['version'] }}</p>
+                            <p class="text-2xs text-gray-400">v{{ $ds['version'] }}</p>
                         </div>
                         @if($ds['has_snapshot'])
                             <button
                                 wire:click="rollbackResource('{{ $ds['key'] }}')"
                                 wire:confirm="{{ __('common.rollback') }} {{ $ds['label'] }} ?"
-                                class="text-xs font-semibold text-amber-600 dark:text-amber-400 press-feedback px-3 py-1.5"
+                                class="text-xs font-semibold text-warning-600 dark:text-warning-400 press-feedback px-3 py-1.5"
                             >
                                 <x-icon name="undo" class="w-4 h-4 inline -mt-0.5" />
                                 {{ __('common.rollback') }}
                             </button>
                         @else
-                            <span class="text-[11px] text-gray-400">{{ __('common.no_snapshot') }}</span>
+                            <span class="text-2xs text-gray-400">{{ __('common.no_snapshot') }}</span>
                         @endif
                     </div>
                 @endforeach
@@ -131,10 +142,69 @@
                 </div>
                 <div class="flex items-center justify-between px-4 py-3.5">
                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('common.data_management') }}</span>
-                    <span class="text-sm font-medium text-green-600">{{ __('vault.encrypted_info') }}</span>
+                    <span class="text-sm font-medium text-success-600">{{ __('vault.encrypted_info') }}</span>
                 </div>
             </div>
         </section>
 
     </div>
+
+    {{-- Dialogue de consentement : Appel direct --}}
+    @if($showDirectCallRationale)
+        <div class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center">
+            <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl px-6 pt-6 pb-safe-tab">
+
+                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-danger-100 dark:bg-danger-900/30 flex items-center justify-center flex-shrink-0">
+                        <x-icon name="phone" class="w-5 h-5 text-danger-600" />
+                    </div>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('common.direct_call_permission_title') }}</h3>
+                </div>
+
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {{ __('common.direct_call_permission_desc') }}
+                </p>
+
+                <ul class="space-y-2 mb-5">
+                    <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <x-icon name="check-circle" class="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />
+                        {{ __('common.direct_call_perm_point1') }}
+                    </li>
+                    <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <x-icon name="check-circle" class="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />
+                        {{ __('common.direct_call_perm_point2') }}
+                    </li>
+                    <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        <x-icon name="shield-check" class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                        {{ __('common.direct_call_perm_point3') }}
+                    </li>
+                </ul>
+
+                <div class="flex gap-3">
+                    <x-btn variant="ghost" wire:click="cancelDirectCall" class="flex-1">
+                        {{ __('common.cancel') }}
+                    </x-btn>
+                    <x-btn variant="danger" wire:click="confirmDirectCall" class="flex-1">
+                        <x-icon name="phone" class="w-4 h-4" />
+                        {{ __('common.authorize') }}
+                    </x-btn>
+                </div>
+
+            </div>
+        </div>
+    @endif
+
 </x-mobile-page>
+
+@script
+<script>
+    $wire.on('request-call-permission', () => {
+        window.location.href = 'tel-direct:permission-check';
+    });
+    window.addEventListener('call-permission-result', (e) => {
+        $wire.handleCallPermissionResult(e.detail.granted);
+    });
+</script>
+@endscript

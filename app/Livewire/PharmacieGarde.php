@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\HandlesReports;
+use App\Livewire\Enums\PharmacyViewMode;
 use App\Modules\Pharmacy\Enums\PharmacyZone;
 use App\Modules\Pharmacy\Models\Pharmacy;
 use App\Modules\Pharmacy\Models\PharmacyGuard;
 use App\Services\Settings\SettingsService;
 use Illuminate\Support\Collection;
-use App\Livewire\Concerns\HandlesReports;
 use Livewire\Component;
 
 final class PharmacieGarde extends Component
 {
     use HandlesReports;
     public string $activeZone = 'littoral';
-    public string $viewMode = 'guard'; // guard (de garde), all (toutes), nearest
+    public PharmacyViewMode $viewMode = PharmacyViewMode::GUARD;
     public ?float $userLat = null;
     public ?float $userLng = null;
     public string $searchQuery = '';
@@ -25,7 +26,7 @@ final class PharmacieGarde extends Component
     {
         $settings = app(SettingsService::class);
         $this->activeZone = $settings->get('pharma_zone', 'littoral') ?? 'littoral';
-        $this->viewMode = $settings->get('pharma_view', 'guard') ?? 'guard';
+        $this->viewMode = PharmacyViewMode::tryFrom($settings->get('pharma_view', 'guard') ?? 'guard') ?? PharmacyViewMode::GUARD;
     }
 
     public function setZone(string $zone): void
@@ -36,7 +37,11 @@ final class PharmacieGarde extends Component
 
     public function setViewMode(string $mode): void
     {
-        $this->viewMode = $mode;
+        $m = PharmacyViewMode::tryFrom($mode);
+        if ($m === null) {
+            return;
+        }
+        $this->viewMode = $m;
         app(SettingsService::class)->set('pharma_view', $mode);
     }
 
@@ -44,7 +49,7 @@ final class PharmacieGarde extends Component
     {
         $this->userLat = $lat;
         $this->userLng = $lng;
-        $this->viewMode = 'nearest';
+        $this->viewMode = PharmacyViewMode::NEAREST;
     }
 
     /**
@@ -133,7 +138,8 @@ final class PharmacieGarde extends Component
     public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.pharmacie-garde', [
-            'zones' => PharmacyZone::cases(),
+            'zones'     => PharmacyZone::cases(),
+            'viewModes' => PharmacyViewMode::cases(),
         ])->layout('components.layouts.app', ['title' => __('pharma.title')]);
     }
 }

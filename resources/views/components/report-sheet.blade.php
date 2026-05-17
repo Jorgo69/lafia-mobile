@@ -1,14 +1,9 @@
+@php use App\Modules\Community\Enums\ServiceReportType; @endphp
 {{-- Global report bottom sheet — one instance in layout --}}
 <div
     x-data="{
         open: false,
         target: { type: '', id: '', label: '' },
-        types: [
-            { value: 'closed', label: '{{ __("common.report_closed") }}', color: 'bg-red-100 dark:bg-red-900/30 text-red-500' },
-            { value: 'open', label: '{{ __("common.report_open") }}', color: 'bg-green-100 dark:bg-green-900/30 text-green-500' },
-            { value: 'not_responding', label: '{{ __("common.report_not_responding") }}', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-500' },
-            { value: 'wrong_number', label: '{{ __("common.report_wrong_number") }}', color: 'bg-red-50 dark:bg-red-900/20 text-red-400' },
-        ],
         report(type) {
             Livewire.dispatch('submit-report', { targetType: this.target.type, targetId: this.target.id, targetLabel: this.target.label, reportType: type });
             window.dispatchEvent(new CustomEvent('report-sent', { detail: { id: this.target.id } }));
@@ -41,7 +36,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="translate-y-0"
         x-transition:leave-end="translate-y-full"
-        class="fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 rounded-t-3xl safe-bottom"
+        class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 bg-white dark:bg-gray-900 rounded-t-3xl safe-bottom"
     >
         <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-3 mb-1"></div>
 
@@ -51,22 +46,27 @@
         </div>
 
         <div class="px-3 pb-3">
-            <template x-for="t in types" :key="t.value">
+            @foreach(ServiceReportType::cases() as $reportType)
                 <button
-                    @click="report(t.value)"
+                    @click="report('{{ $reportType->value }}')"
                     class="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl press-feedback active:bg-gray-50 dark:active:bg-gray-800"
                 >
-                    <span class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" :class="t.color">
+                    <span class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 {{ $reportType->color() }}">
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <template x-if="t.value === 'closed'"><g><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></g></template>
-                            <template x-if="t.value === 'open'"><g><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></g></template>
-                            <template x-if="t.value === 'not_responding'"><g><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" x2="2" y1="2" y2="22"/></g></template>
-                            <template x-if="t.value === 'wrong_number'"><g><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></g></template>
+                            @if($reportType === ServiceReportType::CLOSED)
+                                <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+                            @elseif($reportType === ServiceReportType::OPEN)
+                                <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+                            @elseif($reportType === ServiceReportType::NOT_RESPONDING)
+                                <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" x2="2" y1="2" y2="22"/>
+                            @elseif($reportType === ServiceReportType::WRONG_NUMBER)
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>
+                            @endif
                         </svg>
                     </span>
-                    <span class="text-[15px] font-medium text-gray-900 dark:text-white" x-text="t.label"></span>
+                    <span class="text-body font-medium text-gray-900 dark:text-white">{{ $reportType->label() }}</span>
                 </button>
-            </template>
+            @endforeach
         </div>
 
         <div class="px-3 pb-24">

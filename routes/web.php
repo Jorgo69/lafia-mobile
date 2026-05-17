@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\CercleConfiance;
+use App\Livewire\Citoyen;
 use App\Livewire\Coffre;
+use App\Livewire\Conseils;
 use App\Livewire\Dashboard;
 use App\Livewire\More;
 use App\Livewire\PharmacieGarde;
@@ -20,6 +22,8 @@ Route::middleware(\App\Http\Middleware\EnsureOnboarded::class)->group(function (
     Route::get('/coffre', Coffre::class)->name('coffre');
     Route::get('/plus', More::class)->name('plus');
     Route::get('/settings', Settings::class)->name('settings');
+    Route::get('/conseils', Conseils::class)->name('conseils');
+    Route::get('/citoyen', Citoyen::class)->name('citoyen');
 
     // Legacy direct access (still works)
     Route::get('/profil-vital', ProfilVital::class)->name('profil-vital');

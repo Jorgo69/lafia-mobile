@@ -5,9 +5,9 @@
 >
     @if ($isDark)
         <x-icon name="sun" class="w-6 h-6" />
-        <span class="text-[10px] font-semibold">{{ __('common.light') }}</span>
+        <span class="text-2xs font-semibold">{{ __('common.light') }}</span>
     @else
         <x-icon name="moon" class="w-6 h-6" />
-        <span class="text-[10px] font-semibold">{{ __('common.dark') }}</span>
+        <span class="text-2xs font-semibold">{{ __('common.dark') }}</span>
     @endif
 </button>

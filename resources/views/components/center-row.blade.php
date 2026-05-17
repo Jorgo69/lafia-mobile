@@ -20,7 +20,7 @@
         <button
             wire:click="callNumber('{{ $phone }}')"
             @click.throttle.1000ms
-            class="bg-green-500 text-white p-2 rounded-xl press-feedback"
+            class="bg-success-500 text-white p-2 rounded-xl press-feedback"
         >
             <x-icon name="phone" class="w-5 h-5" />
         </button>

@@ -19,12 +19,12 @@ enum Operator: string
         };
     }
 
-    public function color(): string
+    public function chipClass(): string
     {
         return match ($this) {
-            self::MTN => '#ffcc00',
-            self::MOOV => '#0066ff',
-            self::CELTIIS => '#e60000',
+            self::MTN     => 'bg-brand-mtn text-gray-900',
+            self::MOOV    => 'bg-brand-moov text-white',
+            self::CELTIIS => 'bg-brand-celtiis text-white',
         };
     }
 }

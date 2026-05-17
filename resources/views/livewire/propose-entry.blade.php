@@ -1,3 +1,5 @@
+@php use App\Modules\Community\Enums\ProposalType; @endphp
+
 <div>
     {{-- Bouton "+" flottant --}}
     @if(!$showForm)
@@ -10,70 +12,80 @@
 
     {{-- Bottom sheet formulaire --}}
     @if($showForm)
-        <div class="fixed inset-0 z-50" x-data="{ open: true }" x-show="open" x-cloak>
+        <div class="fixed inset-0 z-50">
             {{-- Backdrop --}}
             <div class="absolute inset-0 bg-black/40" wire:click="$set('showForm', false)"></div>
 
-            {{-- Sheet --}}
-            <div class="absolute bottom-0 inset-x-0 bg-white dark:bg-gray-900 rounded-t-3xl p-5 pb-24 space-y-4
-                        max-h-[90vh] overflow-y-auto
-                        animate-slide-up">
+            {{-- Sheet : flex-col pour sticky footer --}}
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white dark:bg-gray-900 rounded-t-3xl flex flex-col max-h-modal">
 
-                {{-- Handle --}}
-                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto"></div>
-
-                <h3 class="font-bold text-base text-center">{{ __('community.propose_title') }}</h3>
-
-                {{-- Type selector --}}
-                <div class="flex gap-2">
-                    @foreach(\App\Modules\Community\Enums\ProposalType::cases() as $pt)
-                        <button wire:click="$set('type', '{{ $pt->value }}')"
-                                class="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 min-h-[64px] rounded-2xl text-[11px] font-semibold leading-tight text-center transition-colors press-feedback
-                                    {{ $type === $pt->value ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-gray-800 text-gray-500' }}">
-                            <x-icon :name="$pt->icon()" class="w-5 h-5 shrink-0" />
-                            <span>{{ $pt->label() }}</span>
-                        </button>
-                    @endforeach
+                {{-- Handle + titre (non-scrollable) --}}
+                <div class="px-5 pt-3 pb-2 flex-shrink-0">
+                    <div class="w-10 h-1 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-3"></div>
+                    <h3 class="font-bold text-base text-center">{{ __('community.propose_title') }}</h3>
                 </div>
 
-                {{-- Formulaire dynamique --}}
-                <div class="space-y-3">
-                    @if($type === 'pharmacy')
-                        <input type="text" wire:model="name" placeholder="{{ __('community.field_name') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                        <input type="tel" wire:model="phone" placeholder="{{ __('community.field_phone') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                        <input type="text" wire:model="zone" placeholder="{{ __('community.field_zone') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
+                {{-- Corps scrollable --}}
+                <div class="px-5 py-3 space-y-4 overflow-y-auto flex-1">
 
-                    @elseif($type === 'emergency_contact')
-                        <input type="text" wire:model="name" placeholder="{{ __('community.field_name') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                        <input type="tel" wire:model="phone" placeholder="{{ __('community.field_phone') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                        <input type="text" wire:model="commune" placeholder="{{ __('community.field_commune') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
+                    {{-- Type selector --}}
+                    <div class="flex gap-2">
+                        @foreach(\App\Modules\Community\Enums\ProposalType::cases() as $pt)
+                            <button wire:click="$set('type', '{{ $pt->value }}')"
+                                    class="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 min-h-16 rounded-2xl text-2xs font-semibold leading-tight text-center transition-colors press-feedback
+                                        {{ $type === $pt->value ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-gray-800 text-gray-500' }}">
+                                <x-icon :name="$pt->icon()" class="w-5 h-5 shrink-0" />
+                                <span>{{ $pt->label() }}</span>
+                            </button>
+                        @endforeach
+                    </div>
 
-                    @elseif($type === 'ussd_code')
-                        <input type="text" wire:model="code" placeholder="{{ __('community.field_code') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                        <select wire:model="operator"
-                                class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                            <option value="">{{ __('community.field_operator') }}</option>
-                            <option value="mtn">MTN</option>
-                            <option value="moov">Moov</option>
-                            <option value="celtiis">Celtiis</option>
-                        </select>
-                        <input type="text" wire:model="description" placeholder="{{ __('community.field_description') }}"
-                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
-                    @endif
+                    {{-- Formulaire dynamique --}}
+                    <div class="space-y-3">
+                        @if($type === ProposalType::PHARMACY->value)
+                            <input type="text" wire:model="name" placeholder="{{ __('community.field_name') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                            <input type="tel" wire:model="phone" placeholder="{{ __('community.field_phone') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                            <input type="text" wire:model="zone" placeholder="{{ __('community.field_zone') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
 
-                    <input type="text" wire:model="reason" placeholder="{{ __('community.field_reason') }}"
-                           class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-[44px]">
+                        @elseif($type === ProposalType::EMERGENCY_CONTACT->value)
+                            <input type="text" wire:model="name" placeholder="{{ __('community.field_name') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                            <input type="tel" wire:model="phone" placeholder="{{ __('community.field_phone') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                            <input type="text" wire:model="commune" placeholder="{{ __('community.field_commune') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+
+                        @elseif($type === ProposalType::USSD_CODE->value)
+                            <input type="text" wire:model="code" placeholder="{{ __('community.field_code') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                            <select wire:model="operator"
+                                    class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                                <option value="">{{ __('community.field_operator') }}</option>
+                                @foreach($operators as $op)
+                                    <option value="{{ $op->value }}">{{ $op->label() }}</option>
+                                @endforeach
+                            </select>
+                            <input type="text" wire:model="description" placeholder="{{ __('community.field_description') }}"
+                                   class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                        @endif
+
+                        <input type="text" wire:model="reason" placeholder="{{ __('community.field_reason') }}"
+                               class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm py-3 min-h-11">
+                    </div>
+
+                    {{-- Erreurs --}}
+                    @error('name') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
+                    @error('phone') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
+                    @error('code') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
+
                 </div>
 
-                {{-- Actions --}}
-                <div class="flex gap-3">
+                {{-- Footer sticky --}}
+                <div class="px-5 py-4 flex gap-3 flex-shrink-0 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800"
+                     style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0))">
                     <x-btn variant="primary" wire:click="propose" class="flex-1" loading="propose">
                         {{ __('community.submit') }}
                     </x-btn>
@@ -82,10 +94,6 @@
                     </x-btn>
                 </div>
 
-                {{-- Erreurs --}}
-                @error('name') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
-                @error('phone') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
-                @error('code') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
             </div>
         </div>
     @endif

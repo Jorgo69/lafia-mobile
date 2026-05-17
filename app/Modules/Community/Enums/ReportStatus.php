@@ -29,10 +29,10 @@ enum ReportStatus: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::QUEUED => 'bg-gray-100 text-gray-600',
-            self::SENDING => 'bg-blue-100 text-blue-600',
-            self::SENT => 'bg-green-100 text-green-600',
-            self::FAILED => 'bg-red-100 text-red-600',
+            self::QUEUED   => 'bg-gray-100 text-gray-600',
+            self::SENDING  => 'bg-primary-100 text-primary-600',
+            self::SENT     => 'bg-success-100 text-success-600',
+            self::FAILED   => 'bg-danger-100 text-danger-600',
         };
     }
 }

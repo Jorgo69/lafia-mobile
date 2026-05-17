@@ -2,9 +2,9 @@
     <div class="space-y-3">
 
         {{-- 229 Citoyen --}}
-        <a href="/citoyen" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-[64px] press-feedback">
-            <div class="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                <x-icon name="megaphone" class="w-5 h-5 text-amber-600" />
+        <a href="/citoyen" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-16 press-feedback">
+            <div class="w-11 h-11 rounded-full bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center shrink-0">
+                <x-icon name="megaphone" class="w-5 h-5 text-warning-600" />
             </div>
             <div class="flex-1">
                 <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('nav.citizen') }}</p>
@@ -14,9 +14,9 @@
         </a>
 
         {{-- Conseils pratiques --}}
-        <a href="/conseils" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-[64px] press-feedback">
-            <div class="w-11 h-11 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                <x-icon name="lightbulb" class="w-5 h-5 text-blue-600" />
+        <a href="/conseils" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-16 press-feedback">
+            <div class="w-11 h-11 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center shrink-0">
+                <x-icon name="lightbulb" class="w-5 h-5 text-primary-600" />
             </div>
             <div class="flex-1">
                 <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('nav.tips') }}</p>
@@ -26,7 +26,7 @@
         </a>
 
         {{-- Parametres --}}
-        <a href="/settings" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-[64px] press-feedback">
+        <a href="/settings" wire:navigate class="flex items-center gap-4 bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 min-h-16 press-feedback">
             <div class="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
                 <x-icon name="cog" class="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </div>

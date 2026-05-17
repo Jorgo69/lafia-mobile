@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Modules\Community\Enums\ProposalType;
 use App\Modules\Community\Services\OfflineProposalQueue;
+use App\Shared\Enums\Operator;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -91,6 +92,8 @@ final class ProposeEntry extends Component
 
     public function render(): View
     {
-        return view('livewire.propose-entry');
+        return view('livewire.propose-entry', [
+            'operators' => Operator::cases(),
+        ]);
     }
 }

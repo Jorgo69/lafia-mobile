@@ -7,8 +7,8 @@
         'danger' => 'bg-danger-100 text-danger-700 dark:bg-danger-700/20 dark:text-danger-100',
         'warning' => 'bg-warning-100 text-warning-600 dark:bg-warning-600/20 dark:text-warning-100',
         'primary' => 'bg-primary-100 text-primary-700 dark:bg-primary-700/20 dark:text-primary-100',
-        'active' => 'bg-green-100 text-green-700 dark:bg-green-700/20 dark:text-green-300',
-        'lost' => 'bg-red-100 text-red-700 dark:bg-red-700/20 dark:text-red-300',
+        'active' => 'bg-success-100 text-success-700 dark:bg-success-700/20 dark:text-success-300',
+        'lost'   => 'bg-danger-100 text-danger-700 dark:bg-danger-700/20 dark:text-danger-300',
     ];
 @endphp
 

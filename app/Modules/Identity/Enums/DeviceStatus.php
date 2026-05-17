@@ -27,9 +27,9 @@ enum DeviceStatus: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::ACTIVE => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400',
-            self::LOST => 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-400',
-            self::REVOKED => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+            self::ACTIVE   => 'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-400',
+            self::LOST     => 'bg-danger-100 text-danger-700 dark:bg-danger-900 dark:text-danger-400',
+            self::REVOKED  => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
         };
     }
 }

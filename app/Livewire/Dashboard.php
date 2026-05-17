@@ -22,7 +22,7 @@ final class Dashboard extends Component
 {
     use HandlesReports;
 
-    public string $userOperator = 'mtn';
+    public Operator $userOperator = Operator::MTN;
     public string $selectedCategory = '';
 
     /** @var array<int, array<string, mixed>> */
@@ -33,19 +33,25 @@ final class Dashboard extends Component
 
     public function mount(): void
     {
-        $this->userOperator = app(SettingsService::class)->get('dashboard_operator', 'mtn') ?? 'mtn';
+        $this->userOperator = Operator::tryFrom(app(SettingsService::class)->get('dashboard_operator', 'mtn') ?? 'mtn') ?? Operator::MTN;
         $this->loadNationalServices();
         $this->loadLocalCenters();
     }
 
     public function callNumber(string $phoneNumber): void
     {
-        $this->dispatch('initiate-call', number: $phoneNumber);
+        $mode = app(SettingsService::class)->get('call_mode', 'dial');
+        $uri = ($mode === 'direct' ? 'tel-direct:' : 'tel:') . $phoneNumber;
+        $this->dispatch('initiate-call', uri: $uri);
     }
 
     public function setOperator(string $operator): void
     {
-        $this->userOperator = $operator;
+        $op = Operator::tryFrom($operator);
+        if ($op === null) {
+            return;
+        }
+        $this->userOperator = $op;
         $this->loadLocalCenters();
         app(SettingsService::class)->set('dashboard_operator', $operator);
     }
@@ -76,17 +82,15 @@ final class Dashboard extends Component
             'name' => $center->name,
             'category' => $center->category->value,
             'category_label' => $center->category->label(),
-            'short_code' => $center->category->shortCode(),
+            'short_code' => $center->contacts->first()?->phone_number ?? $center->category->shortCode(),
             'phone' => $center->contacts->first()?->phone_number ?? '',
         ])->toArray();
     }
 
     private function loadLocalCenters(): void
     {
-        $operator = Operator::tryFrom($this->userOperator) ?? Operator::MTN;
-
-        $this->localCenters = EmergencyCenter::with(['contacts' => function ($q) use ($operator) {
-            $q->where('operator', $operator)->where('is_active', true);
+        $this->localCenters = EmergencyCenter::with(['contacts' => function ($q): void {
+            $q->where('operator', $this->userOperator)->where('is_active', true);
         }, 'department'])
             ->where('type', EmergencyCenterType::CCPC)
             ->where('is_active', true)
@@ -94,11 +98,11 @@ final class Dashboard extends Component
             ->limit(10)
             ->get()
             ->map(fn (EmergencyCenter $center) => [
-                'id' => $center->id,
-                'name' => $center->name,
+                'id'         => $center->id,
+                'name'       => $center->name,
                 'department' => $center->department->name,
-                'phone' => $center->contacts->first()?->phone_number ?? 'N/A',
-                'operator' => $operator->label(),
+                'phone'      => $center->contacts->first()?->phone_number ?? 'N/A',
+                'operator'   => $this->userOperator->label(),
             ])->toArray();
     }
 
@@ -114,6 +118,8 @@ final class Dashboard extends Component
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.dashboard');
+        return view('livewire.dashboard', [
+            'operators' => Operator::cases(),
+        ]);
     }
 }

@@ -27,9 +27,9 @@ enum GuardianStatus: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::PENDING => 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-400',
-            self::ACCEPTED => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400',
-            self::REVOKED => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
+            self::PENDING  => 'bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-400',
+            self::ACCEPTED => 'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-400',
+            self::REVOKED  => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
         };
     }
 }

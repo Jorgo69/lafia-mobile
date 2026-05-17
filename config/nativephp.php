@@ -81,7 +81,8 @@ return [
      * You may use glob / wildcard patterns here.
      */
     'cleanup_exclude_files' => [
-        'build',
+        // Note: 'build' was removed — rsync --exclude='build' matches public/build too,
+        // which would strip the compiled Tailwind CSS from the bundle.
         'temp',
         'content',
         'node_modules',

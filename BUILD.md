@@ -13,25 +13,71 @@ export PATH="$PATH:$JAVA_HOME/bin:$ANDROID_HOME/platform-tools"
 4. **NativePHP Mobile** installe : `composer require nativephp/mobile`
 5. **Ressources NativePHP** : `php artisan native:install`
 
-## Builder l'APK
+---
 
-Depuis le dossier `lafia-app/` :
+## Builder l'APK Android
+
+> **IMPORTANT** : `php artisan native:build` ne supporte PAS Android sur Linux (iOS seulement).
+> Le build Android est manuel, en 4 etapes.
+
+**Toutes les commandes depuis `lafia-app/`**
+
+### Etape 1 — Assets front-end
 
 ```bash
-php artisan native:build android
+npm run build
 ```
 
-Ou si ca ne marche pas, le build Gradle direct :
+### Etape 2 — Bundle Laravel (copie + composer prod + zip)
 
 ```bash
-cd nativephp/android && ./gradlew assembleDebug
+APP_DIR="$(pwd)"
+TEMP_DIR="/tmp/lafia-bundle-build"
+ZIP_PATH="$APP_DIR/nativephp/android/app/src/main/assets/laravel_bundle.zip"
+
+rm -rf "$TEMP_DIR" && mkdir -p "$TEMP_DIR"
+
+rsync -a --delete \
+  --exclude=".git" --exclude="node_modules" \
+  --exclude="storage/framework/cache/*" \
+  --exclude="storage/framework/views/*" \
+  --exclude="storage/framework/sessions/*" \
+  --exclude="storage/logs/*" \
+  --exclude="nativephp" --exclude="tests" --exclude=".env.testing" \
+  "$APP_DIR/" "$TEMP_DIR/"
+
+cd "$TEMP_DIR"
+composer install --no-dev --optimize-autoloader --quiet
+cp vendor/nativephp/mobile/bootstrap/android/artisan.php artisan.php
+zip -r "$ZIP_PATH" . -x "*.git*" > /dev/null
+
+echo "Bundle OK -> $ZIP_PATH"
 ```
 
-Le build prend ~5-20 min selon le PC.
+### Etape 3 — Compiler l'APK avec Gradle
+
+```bash
+cd nativephp/android
+./gradlew assembleDebug
+```
+
+Duree : 2-5 min (plus long au premier build).
+
+### Etape 4 — Installer sur le telephone (via ADB)
+
+```bash
+adb install -r nativephp/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**Si ADB dit "no permissions"** :
+1. Debrancher et rebrancher le cable USB
+2. Sur le telephone : accepter la popup "Autoriser le debogage USB"
+3. Relancer : `adb kill-server && adb start-server && adb devices`
+4. Le telephone doit afficher `device` (pas `no permissions`)
+
+---
 
 ## Ou trouver l'APK
-
-Apres le build, l'APK est toujours ici :
 
 ```
 lafia-app/nativephp/android/app/build/outputs/apk/debug/app-debug.apk
@@ -39,20 +85,38 @@ lafia-app/nativephp/android/app/build/outputs/apk/debug/app-debug.apk
 
 Taille : ~83 Mo
 
-## Envoyer l'APK
+---
 
+## Envoyer l'APK a quelqu'un
+
+- **Telegram** : envoyer comme fichier, limite 2 Go (recommande)
 - **WhatsApp** : envoyer comme document (pas comme image), limite 100 Mo
-- **Email** : en piece jointe (Gmail limite 25 Mo, utiliser Google Drive)
 - **Google Drive / Dropbox** : uploader puis partager le lien
-- **Telegram** : envoyer comme fichier, limite 2 Go
-- **USB** : copier sur cle USB
+- **Email** : utiliser Google Drive (Gmail limite 25 Mo)
 
-## Installer sur un telephone Android
+## Installer sur un telephone Android (sans ADB)
 
 1. Recevoir/telecharger l'APK sur le telephone
-2. Android demande "Autoriser les sources inconnues" > accepter
-3. Appuyer sur l'APK > Installer
-4. Ouvrir Lafia
+2. Ouvrir le fichier APK
+3. Android demande "Autoriser les sources inconnues" > accepter
+4. Installer > Ouvrir Lafia
+
+---
+
+## Voir les logs Laravel en direct (debug)
+
+Telephone branche en USB :
+
+```bash
+# Option 1 — via NativePHP (le mieux)
+php artisan native:tail
+
+# Option 2 — lire le fichier log directement
+adb shell "run-as com.lafia.app cat /data/user/0/com.lafia.app/app_storage/persisted_data/storage/logs/laravel.log"
+
+# Option 3 — logcat Android brut
+adb logcat -s "PHPMonitor" -d
+```
 
 ---
 

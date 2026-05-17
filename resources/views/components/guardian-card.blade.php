@@ -9,5 +9,5 @@
         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $statusLabel }} &middot; {{ $acceptedAt ?? __('common.pending') }}</div>
     </div>
     @php $guardianStatus = \App\Modules\Identity\Enums\GuardianStatus::tryFrom($status); @endphp
-    <div class="w-2.5 h-2.5 rounded-full {{ $guardianStatus === \App\Modules\Identity\Enums\GuardianStatus::ACCEPTED ? 'bg-green-500' : 'bg-yellow-500' }}"></div>
+    <div class="w-2.5 h-2.5 rounded-full {{ $guardianStatus === \App\Modules\Identity\Enums\GuardianStatus::ACCEPTED ? 'bg-success-500' : 'bg-warning-500' }}"></div>
 </x-card>

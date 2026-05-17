@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Livewire\Enums\UssdTab;
 use App\Modules\Ussd\Enums\UssdCategory;
 use App\Modules\Ussd\Models\UssdCode;
 use App\Modules\Ussd\Models\UssdFavorite;
@@ -19,7 +20,7 @@ final class UssdGuide extends Component
     public string $secondOperator = '';
 
     // --- Navigation ---
-    public string $activeTab = 'list'; // list, favorites, guide
+    public UssdTab $activeTab = UssdTab::LIST;
     public string $activeCategory = '';
 
     // --- Guide mode ---
@@ -35,7 +36,7 @@ final class UssdGuide extends Component
         $settings = app(SettingsService::class);
         $this->activeOperator = $settings->get('ussd_operator', 'mtn') ?? 'mtn';
         $this->activeCategory = $settings->get('ussd_category', '') ?? '';
-        $this->activeTab = $settings->get('ussd_tab', 'list') ?? 'list';
+        $this->activeTab = UssdTab::tryFrom($settings->get('ussd_tab', 'list') ?? 'list') ?? UssdTab::LIST;
     }
 
     public function setOperator(string $operator): void
@@ -56,7 +57,11 @@ final class UssdGuide extends Component
 
     public function setTab(string $tab): void
     {
-        $this->activeTab = $tab;
+        $t = UssdTab::tryFrom($tab);
+        if ($t === null) {
+            return;
+        }
+        $this->activeTab = $t;
         $this->activeCodeId = null;
         $this->paramValues = [];
         app(SettingsService::class)->set('ussd_tab', $tab);
@@ -73,14 +78,14 @@ final class UssdGuide extends Component
         if (!$code->needsParams() && $code->action_type === \App\Modules\Ussd\Enums\UssdActionType::DIRECT) {
             // Direct: lancer immediatement (le JS s'en charge via l'event)
             $this->trackUsage($codeId);
-            $this->dispatch('launch-ussd', uri: $code->toTelUri());
+            $this->dispatch('launch-ussd', uri: $this->buildCallUri($code->toTelUri()));
             return;
         }
 
         // Guided ou Menu: ouvrir le formulaire ou lancer le menu
         if ($code->action_type === \App\Modules\Ussd\Enums\UssdActionType::MENU && !$code->needsParams()) {
             $this->trackUsage($codeId);
-            $this->dispatch('launch-ussd', uri: $code->toTelUri());
+            $this->dispatch('launch-ussd', uri: $this->buildCallUri($code->toTelUri()));
             return;
         }
 
@@ -113,7 +118,7 @@ final class UssdGuide extends Component
         }
 
         $this->trackUsage($code->id, $this->paramValues);
-        $this->dispatch('launch-ussd', uri: $code->toTelUri($this->paramValues));
+        $this->dispatch('launch-ussd', uri: $this->buildCallUri($code->toTelUri($this->paramValues)));
 
         $this->activeCodeId = null;
         $this->paramValues = [];
@@ -194,10 +199,17 @@ final class UssdGuide extends Component
     public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.ussd-guide', [
-            'operators' => Operator::cases(),
+            'operators'  => Operator::cases(),
+            'ussdTabs'   => UssdTab::cases(),
             'categories' => UssdCategory::cases(),
             'activeCode' => $this->activeCodeId ? UssdCode::find($this->activeCodeId) : null,
         ])->layout('components.layouts.app', ['title' => __('ussd.title')]);
+    }
+
+    private function buildCallUri(string $telUri): string
+    {
+        $mode = app(SettingsService::class)->get('call_mode', 'dial');
+        return $mode === 'direct' ? str_replace('tel:', 'tel-direct:', $telUri) : $telUri;
     }
 
     private function trackUsage(int $codeId, array $params = []): void

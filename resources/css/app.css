@@ -48,29 +48,28 @@
         @apply px-4 py-4;
     }
 
-    /* Tab bar */
+    /* Tab bar — z-40 pour rester sous les modals/sheets (z-50) */
     .tab-bar {
-        @apply fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800;
+        @apply fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800;
         padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
-    /* Bottom sheet backdrop */
+    /* Bottom sheet backdrop — PAS de backdrop-filter (cause des bugs de rendu) */
     .sheet-backdrop {
         @apply fixed inset-0 bg-black/50 z-50;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
     }
 
-    /* Bottom sheet panel */
+    /* Bottom sheet panel — responsive, centré sur desktop */
     .sheet-panel {
-        @apply fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-900 rounded-t-3xl;
+        @apply fixed bottom-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 rounded-t-3xl flex flex-col;
+        left: 50%;
+        transform: translateX(-50%);
         max-height: 85vh;
-        padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
     /* Sheet drag handle */
     .sheet-handle {
-        @apply w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-3 mb-2;
+        @apply flex-shrink-0 w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-3 mb-2;
     }
 
     /* Active press feedback (like native) */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Modules\Community\Enums\ServiceReportType;
 use App\Modules\Community\Jobs\FlushPendingReportsJob;
 use App\Modules\Community\Services\OfflineReportQueue;
 use Livewire\Attributes\On;
@@ -13,6 +14,10 @@ trait HandlesReports
     #[On('submit-report')]
     public function submitReport(string $targetType, string $targetId, string $targetLabel, string $reportType): void
     {
+        if (ServiceReportType::tryFrom($reportType) === null) {
+            return;
+        }
+
         $queue = app(OfflineReportQueue::class);
 
         $queue->queue(

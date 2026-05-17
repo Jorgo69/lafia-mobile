@@ -1,4 +1,5 @@
-<x-mobile-page :title="__('ussd.title')" x-data="{}" @launch-ussd.window="window.open($event.detail.uri, '_self')">
+@php use App\Livewire\Enums\UssdTab; @endphp
+<x-mobile-page :title="__('ussd.title')">
     <div class="space-y-4">
 
         {{-- Operator selector --}}
@@ -6,7 +7,7 @@
             @foreach($operators as $op)
                 <x-chip
                     :active="$activeOperator === $op->value"
-                    :color="$op->color()"
+                    :activeClass="$op->chipClass()"
                     wire:click="setOperator('{{ $op->value }}')"
                     class="flex-1 justify-center"
                 >
@@ -17,18 +18,18 @@
 
         {{-- Tabs --}}
         <x-segment
-            :options="['list' => __('ussd.list_mode'), 'favorites' => __('ussd.favorites')]"
-            :active="$activeTab"
+            :options="collect($ussdTabs)->mapWithKeys(fn($t) => [$t->value => $t->label()])->toArray()"
+            :active="$activeTab->value"
             wireClick="setTab"
         />
 
         {{-- Recents --}}
-        @if($this->recent->isNotEmpty() && $activeTab === 'list')
+        @if($this->recent->isNotEmpty() && $activeTab === UssdTab::LIST)
             <x-scroll-row gap="2">
                 @foreach($this->recent as $code)
                     <button
                         wire:click="selectCode({{ $code->id }})"
-                        class="flex-shrink-0 snap-start bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl px-3 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 press-feedback"
+                        class="flex-shrink-0 snap-start bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-xl px-3 py-2 text-sm font-medium text-primary-700 dark:text-primary-300 press-feedback"
                     >
                         {{ $code->label }}
                     </button>
@@ -36,7 +37,7 @@
             </x-scroll-row>
         @endif
 
-        @if($activeTab === 'list')
+        @if($activeTab === UssdTab::LIST)
             {{-- Categories --}}
             <x-scroll-row gap="2">
                 <x-chip
@@ -66,15 +67,15 @@
                                 @if($code->description)
                                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $code->description }}</div>
                                 @endif
-                                <div class="text-xs font-mono text-blue-600 dark:text-blue-400 mt-1">{{ $code->code }}</div>
+                                <div class="text-xs font-mono text-primary-600 dark:text-primary-400 mt-1">{{ $code->code }}</div>
                             </button>
                             <button
                                 wire:click="toggleFavorite({{ $code->id }})"
-                                class="p-2 press-feedback {{ in_array($code->id, $this->favoriteIds) ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600' }}"
+                                class="min-h-11 min-w-11 flex items-center justify-center press-feedback {{ in_array($code->id, $this->favoriteIds) ? 'text-warning-500' : 'text-gray-300 dark:text-gray-600' }}"
                             >
                                 <x-icon name="star" class="w-5 h-5" />
                             </button>
-                            <button wire:click="selectCode({{ $code->id }})" class="bg-blue-500 text-white p-2.5 rounded-xl press-feedback">
+                            <button wire:click="selectCode({{ $code->id }})" class="min-h-11 min-w-11 flex items-center justify-center bg-primary-500 text-white rounded-xl press-feedback">
                                 <x-icon name="{{ $code->needsParams() ? 'arrow-right' : 'phone' }}" class="w-5 h-5" />
                             </button>
                         </div>
@@ -87,7 +88,7 @@
                 @endforelse
             </div>
 
-        @elseif($activeTab === 'favorites')
+        @elseif($activeTab === UssdTab::FAVORITES)
             <div class="space-y-2">
                 @forelse($this->favorites as $fav)
                     <x-card>
@@ -101,7 +102,7 @@
                                     @endif
                                 </div>
                             </button>
-                            <button wire:click="selectCode({{ $fav->ussd_code_id }})" class="bg-blue-500 text-white p-2.5 rounded-xl press-feedback">
+                            <button wire:click="selectCode({{ $fav->ussd_code_id }})" class="bg-primary-500 text-white p-2.5 rounded-xl press-feedback">
                                 <x-icon name="phone" class="w-5 h-5" />
                             </button>
                         </div>
@@ -123,17 +124,22 @@
         <div class="sheet-panel"
             x-data="{ startY: 0, dy: 0, dragging: false }"
             x-on:touchstart="startY = $event.touches[0].clientY; dragging = true"
-            x-on:touchmove="if(dragging) { dy = $event.touches[0].clientY - startY; if(dy > 0) $el.style.transform = `translateY(${dy}px)` }"
-            x-on:touchend="dragging = false; if(dy > 100) $wire.cancelGuided(); else $el.style.transform = ''; dy = 0"
+            x-on:touchmove="if(dragging) { dy = $event.touches[0].clientY - startY; if(dy > 0) $el.style.transform = `translateX(-50%) translateY(${dy}px)` }"
+            x-on:touchend="dragging = false; if(dy > 100) $wire.cancelGuided(); else $el.style.transform = 'translateX(-50%)'; dy = 0"
         >
+            {{-- Handle --}}
             <div class="sheet-handle"></div>
-            <div class="px-5 pb-24 space-y-4 overflow-y-auto" style="max-height: 85vh">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-lg">{{ $activeCode->label }}</h3>
-                    <button wire:click="cancelGuided" class="p-1 press-feedback">
-                        <x-icon name="x-mark" class="w-5 h-5 text-gray-400" />
-                    </button>
-                </div>
+
+            {{-- Titre (non-scrollable) --}}
+            <div class="flex items-center justify-between px-5 pb-3 flex-shrink-0">
+                <h3 class="font-bold text-lg">{{ $activeCode->label }}</h3>
+                <button wire:click="cancelGuided" class="p-1 press-feedback">
+                    <x-icon name="x-mark" class="w-5 h-5 text-gray-400" />
+                </button>
+            </div>
+
+            {{-- Corps scrollable --}}
+            <div class="px-5 space-y-4 overflow-y-auto flex-1 pb-4">
 
                 @if($activeCode->description)
                     <p class="text-sm text-gray-500">{{ $activeCode->description }}</p>
@@ -143,7 +149,7 @@
                     <div class="space-y-2">
                         @foreach($activeCode->steps as $i => $step)
                             <div class="flex items-start gap-2">
-                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">{{ $i + 1 }}</span>
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-xs font-bold flex items-center justify-center">{{ $i + 1 }}</span>
                                 <span class="text-sm">{{ $step }}</span>
                             </div>
                         @endforeach
@@ -159,11 +165,22 @@
                                     type="{{ $param['type'] ?? 'text' }}"
                                     wire:model="paramValues.{{ $param['key'] }}"
                                     placeholder="{{ $param['placeholder'] ?? '' }}"
-                                    class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                 />
                             </div>
                         @endforeach
                     </div>
+                @endif
+
+                <div class="text-center">
+                    <span class="text-xs font-mono text-gray-400">{{ $activeCode->code }}</span>
+                </div>
+            </div>
+
+            {{-- Footer sticky avec bouton Composer --}}
+            <div class="px-5 py-4 flex-shrink-0 border-t border-gray-100 dark:border-gray-800"
+                 style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0))">
+                @if($activeCode->needsParams())
                     <x-btn variant="secondary" wire:click="launchGuided" class="w-full" size="lg" loading="launchGuided">
                         <x-icon name="phone" class="w-5 h-5" />
                         {{ __('ussd.dial') }}
@@ -174,11 +191,15 @@
                         {{ __('ussd.dial') }} {{ $activeCode->code }}
                     </x-btn>
                 @endif
-
-                <div class="text-center">
-                    <span class="text-xs font-mono text-gray-400">{{ $activeCode->code }}</span>
-                </div>
             </div>
         </div>
     @endif
 </x-mobile-page>
+
+@script
+<script>
+    $wire.on('launch-ussd', ({ uri }) => {
+        window.location.href = uri;
+    });
+</script>
+@endscript
