@@ -22,3 +22,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/nativephp/android/app/build/
+/nativephp/android/.gradle/
+/nativephp/android/local.properties
+/nativephp/php-bin/
+nativephp_debug.json
+nativephp.lock
+/database/database.sqlite

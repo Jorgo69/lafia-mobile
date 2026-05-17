@@ -83,19 +83,30 @@
         @elseif($viewMode === 'nearest')
             @if($userLat === null)
                 <div
-                    x-data
+                    x-data="{ loading: true, failed: false }"
                     x-init="
                         if (navigator.geolocation) {
                             navigator.geolocation.getCurrentPosition(
-                                (pos) => $wire.setUserLocation(pos.coords.latitude, pos.coords.longitude),
-                                () => {}
+                                (pos) => { loading = false; $wire.setUserLocation(pos.coords.latitude, pos.coords.longitude); },
+                                () => { loading = false; failed = true; }
                             );
-                        }
+                        } else { loading = false; failed = true; }
                     "
                     class="text-center py-12 text-gray-400"
                 >
-                    <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 animate-pulse" />
-                    <p class="text-sm">{{ __('pharma.enable_location') }}</p>
+                    <template x-if="loading">
+                        <div>
+                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 animate-pulse" />
+                            <p class="text-sm">{{ __('pharma.enable_location') }}</p>
+                        </div>
+                    </template>
+                    <template x-if="failed">
+                        <div>
+                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 text-red-400" />
+                            <p class="text-sm text-red-500">{{ __('pharma.location_denied') }}</p>
+                            <p class="text-xs mt-1 opacity-70">{{ __('pharma.location_hint') }}</p>
+                        </div>
+                    </template>
                 </div>
             @elseif($this->nearest->isNotEmpty())
                 <div class="space-y-2">

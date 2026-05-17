@@ -15,4 +15,6 @@ return [
     'no_nearby' => 'No on-duty pharmacy nearby',
     'km' => 'km',
     'pharmacies' => 'pharmacy(ies)',
+    'location_denied' => 'Location denied',
+    'location_hint' => 'Enable location in your phone settings',
 ];

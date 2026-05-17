@@ -20,4 +20,5 @@ return [
     'guardian_status_pending' => 'Ɖò te kpɔ́n wɛ',
     'guardian_status_accepted' => 'Ɖò azɔ̌ wà wɛ',
     'guardian_status_revoked' => 'È ɖè sín',
+'register_device' => 'Wlǎn',
 ];

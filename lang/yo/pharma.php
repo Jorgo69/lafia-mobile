@@ -15,4 +15,6 @@ return [
     'no_nearby' => 'Ko si ile elegbogi ti o sunmọ',
     'km' => 'km',
     'pharmacies' => 'ile itaja oogun',
+    'location_denied' => 'Ipò kọ̀',
+    'location_hint' => 'Mu ipò ṣiṣẹ́ nínú ètò fóònù rẹ',
 ];

@@ -41,4 +41,7 @@ return [
     'emergencies' => 'Pajawiri',
     'tips' => 'Imọran',
     'health_schema' => 'Eto ilera',
+    'pharmacy' => 'Ile itaja oogun',
+    'emergency_contact' => 'Nọmba pajawiri',
+    'ussd_code' => 'Koodu USSD',
 ];

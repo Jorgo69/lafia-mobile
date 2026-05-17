@@ -41,4 +41,7 @@ return [
     'emergencies' => 'Emergencies',
     'tips' => 'Tips',
     'health_schema' => 'Health schema',
+    'pharmacy' => 'Pharmacy',
+    'emergency_contact' => 'Emergency contact',
+    'ussd_code' => 'USSD Code',
 ];

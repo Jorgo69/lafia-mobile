@@ -24,6 +24,7 @@ use Livewire\Component;
 final class CercleConfiance extends Component
 {
     use RequiresAuth;
+    public bool $embedded = false;
     public ?array $identity = null;
 
     /** @var array<int, array<string, mixed>> */

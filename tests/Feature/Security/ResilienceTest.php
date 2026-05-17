@@ -65,6 +65,9 @@ final class ResilienceTest extends TestCase
     public function test_settings_missing_does_not_crash(): void
     {
         \Illuminate\Support\Facades\DB::table('settings')->truncate();
-        $this->get('/')->assertOk();
+        // Without onboarding_done, should redirect to welcome
+        $this->get('/')->assertRedirect('/welcome');
+        // Welcome page itself should render fine
+        $this->get('/welcome')->assertOk();
     }
 }

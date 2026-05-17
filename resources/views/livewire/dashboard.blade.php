@@ -8,7 +8,7 @@
                 x-on:click.throttle.2000ms
                 class="relative w-32 h-32 rounded-full bg-gradient-to-b from-red-500 to-red-600 text-white shadow-xl shadow-red-500/30 press-feedback flex items-center justify-center"
             >
-                <div class="absolute inset-0 rounded-full animate-ping bg-red-400 opacity-20"></div>
+                <div class="absolute inset-0 rounded-full animate-pulse bg-red-400 opacity-15"></div>
                 <div class="text-center relative">
                     <x-icon name="phone-call" class="w-9 h-9 mx-auto mb-1" />
                     <div class="text-xl font-black">{{ __('dashboard.sos_label') }}</div>

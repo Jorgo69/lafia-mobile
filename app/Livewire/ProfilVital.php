@@ -20,6 +20,7 @@ use Livewire\Component;
 final class ProfilVital extends Component
 {
     use RequiresAuth;
+    public bool $embedded = false;
     public bool $isEditing = false;
     public bool $isLocked = true;
     public ?string $vaultId = null;

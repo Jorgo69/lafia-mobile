@@ -18,10 +18,10 @@
     ];
 
     $sizes = [
-        'sm' => 'px-3 py-1.5 text-sm gap-1.5',
-        'md' => 'px-5 py-2.5 text-sm gap-2',
-        'lg' => 'px-6 py-3 text-base gap-2',
-        'xl' => 'px-8 py-4 text-lg gap-3',
+        'sm' => 'px-3 py-2.5 text-sm gap-1.5 min-h-[44px]',
+        'md' => 'px-5 py-2.5 text-sm gap-2 min-h-[44px]',
+        'lg' => 'px-6 py-3 text-base gap-2 min-h-[48px]',
+        'xl' => 'px-8 py-4 text-lg gap-3 min-h-[52px]',
         'sos' => 'w-36 h-36 text-lg',
     ];
 

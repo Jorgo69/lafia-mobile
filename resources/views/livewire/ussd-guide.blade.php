@@ -127,7 +127,7 @@
             x-on:touchend="dragging = false; if(dy > 100) $wire.cancelGuided(); else $el.style.transform = ''; dy = 0"
         >
             <div class="sheet-handle"></div>
-            <div class="px-5 pb-5 space-y-4 overflow-y-auto" style="max-height: 75vh">
+            <div class="px-5 pb-24 space-y-4 overflow-y-auto" style="max-height: 85vh">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-lg">{{ $activeCode->label }}</h3>
                     <button wire:click="cancelGuided" class="p-1 press-feedback">
@@ -164,15 +164,15 @@
                             </div>
                         @endforeach
                     </div>
-                    <button wire:click="launchGuided" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl press-feedback flex items-center justify-center gap-2">
+                    <x-btn variant="secondary" wire:click="launchGuided" class="w-full" size="lg" loading="launchGuided">
                         <x-icon name="phone" class="w-5 h-5" />
                         {{ __('ussd.dial') }}
-                    </button>
+                    </x-btn>
                 @else
-                    <button wire:click="selectCode({{ $activeCode->id }})" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl press-feedback flex items-center justify-center gap-2">
+                    <x-btn variant="secondary" wire:click="selectCode({{ $activeCode->id }})" class="w-full" size="lg">
                         <x-icon name="phone" class="w-5 h-5" />
                         {{ __('ussd.dial') }} {{ $activeCode->code }}
-                    </button>
+                    </x-btn>
                 @endif
 
                 <div class="text-center">

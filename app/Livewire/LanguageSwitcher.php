@@ -40,7 +40,7 @@ final class LanguageSwitcher extends Component
 
         app(SettingsService::class)->set('locale', $locale);
 
-        $this->dispatch('locale-changed', locale: $locale);
+        $this->js("window.location.replace(window.location.pathname)");
     }
 
     public function render(): \Illuminate\Contracts\View\View

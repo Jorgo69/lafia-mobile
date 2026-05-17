@@ -41,4 +41,7 @@ return [
     'emergencies' => 'Nukunkun',
     'tips' => 'Wěma',
     'health_schema' => 'Lanmɛ sɛn',
+    'pharmacy' => 'Amlika tɔn',
+    'emergency_contact' => 'Telefonu gan',
+    'ussd_code' => 'USSD kódu',
 ];

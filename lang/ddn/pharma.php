@@ -15,4 +15,6 @@ return [
     'no_nearby' => 'Aucune pharmacie de garde a proximite',
     'km' => 'km',
     'pharmacies' => 'pharmacie(s)',
+    'location_denied' => 'Localisation refusee',
+    'location_hint' => 'Activez la localisation dans les parametres de votre telephone',
 ];

@@ -15,4 +15,6 @@ return [
     'no_nearby' => 'Atínkɛ́nsá ɖebǔ sɛkpɔ ǎ',
     'km' => 'km',
     'pharmacies' => 'atikun xo',
+    'location_denied' => 'Fí tɔn gbɛ́',
+    'location_hint' => 'Hǔn fí tɔn ɖò telefonu towe mɛ',
 ];

@@ -27,6 +27,7 @@
     <x-toast />
     <x-report-sheet />
     <livewire:sync-undo-notification />
+    <livewire:propose-entry />
     <x-tab-bar />
 
     @livewireScripts

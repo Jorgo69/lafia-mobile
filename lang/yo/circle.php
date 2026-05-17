@@ -20,4 +20,5 @@ return [
     'guardian_status_pending' => 'N duro',
     'guardian_status_accepted' => 'Ṣiṣẹ',
     'guardian_status_revoked' => 'Ti fagilee',
+'register_device' => 'Forúkọsílẹ̀',
 ];

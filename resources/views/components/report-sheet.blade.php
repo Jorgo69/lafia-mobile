@@ -69,10 +69,10 @@
             </template>
         </div>
 
-        <div class="px-3 pb-5">
+        <div class="px-3 pb-24">
             <button
                 @click="open = false"
-                class="w-full py-3.5 text-center text-sm font-semibold text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-2xl press-feedback"
+                class="w-full py-3.5 text-center text-sm font-semibold text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-2xl press-feedback min-h-[44px]"
             >
                 {{ __('common.cancel') }}
             </button>

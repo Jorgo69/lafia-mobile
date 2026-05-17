@@ -20,4 +20,5 @@ return [
     'guardian_status_pending' => 'En attente',
     'guardian_status_accepted' => 'Actif',
     'guardian_status_revoked' => 'Revoque',
+    'register_device' => 'Enregistrer',
 ];

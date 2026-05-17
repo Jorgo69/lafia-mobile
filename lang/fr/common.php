@@ -41,4 +41,7 @@ return [
     'emergencies' => 'Urgences',
     'tips' => 'Conseils',
     'health_schema' => 'Schema sante',
+    'pharmacy' => 'Pharmacie',
+    'emergency_contact' => 'Contact d\'urgence',
+    'ussd_code' => 'Code USSD',
 ];

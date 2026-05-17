@@ -18,15 +18,15 @@
     </div>
 
     {{-- Call zone --}}
-    <button
-        wire:click="callNumber('{{ $phone }}')"
+    <a
+        href="tel:{{ $phone }}"
         @click.throttle.1000ms
-        class="w-full flex flex-col items-center gap-2 py-4 press-feedback"
+        class="w-full flex flex-col items-center gap-2 py-4 min-h-[88px] press-feedback"
     >
         <div class="w-12 h-12 rounded-full flex items-center justify-center {{ $colorClass }}">
             <x-icon :name="$iconName" class="w-6 h-6" />
         </div>
         <span class="text-sm font-semibold text-surface-dark dark:text-gray-200">{{ $name }}</span>
         <span class="text-lg font-bold text-danger">{{ $shortCode }}</span>
-    </button>
+    </a>
 </div>
