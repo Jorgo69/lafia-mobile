@@ -17,4 +17,9 @@ return [
     'pharmacies' => 'atikun xo',
     'location_denied' => 'Fí tɔn gbɛ́',
     'location_hint' => 'Hǔn fí tɔn ɖò telefonu towe mɛ',
+    'location_permission_title' => 'Xlɛ́ fí e a ɖè é à?',
+    'location_permission_desc' => 'Bo na mɔ atínkɛ́nsá e ɖò garde jí e sɛkpɔ towe lɛ, Lafia hɛn hudo fí e a ɖè é tɔn.',
+    'location_perm_point1' => 'È nɔ zán fí e a ɖè é ɖó nukúnna dó atínkɛ́nsá lɛ sín sín wú.',
+    'location_perm_point2' => 'È nɔ sɛ́n tɔn dó sɛ́ɛ́n yì alǒ sɔ́ dó sin mɛ ǎ.',
+    'location_perm_point3' => 'A sixu gbɛ́ nú nǔ elɔ hwenu e a jló é ɖò eto telefonu towe mɛ.',
 ];

@@ -59,6 +59,22 @@ final class PharmacySeeder extends Seeder
 
             // === COME (Mono) ===
             ['name' => 'Pharmacie Divine Misericorde', 'zone' => 'mono', 'city' => 'Come', 'neighborhood' => 'Akodeha', 'phone' => '+22952475858', 'latitude' => 6.4070, 'longitude' => 1.8800],
+
+            // === COLLINES ===
+            ['name' => 'Pharmacie de Dassa', 'zone' => 'collines', 'city' => 'Dassa-Zoume', 'neighborhood' => 'Centre', 'phone' => '+22922530101', 'latitude' => 7.7670, 'longitude' => 2.1880],
+            ['name' => 'Pharmacie de Savalou', 'zone' => 'collines', 'city' => 'Savalou', 'neighborhood' => 'Centre', 'phone' => '+22922550101', 'latitude' => 7.9310, 'longitude' => 1.9760],
+
+            // === ALIBORI ===
+            ['name' => 'Pharmacie de Kandi', 'zone' => 'alibori', 'city' => 'Kandi', 'neighborhood' => 'Centre', 'phone' => '+22923661010', 'latitude' => 11.1310, 'longitude' => 2.9400],
+            ['name' => 'Pharmacie de Malanville', 'zone' => 'alibori', 'city' => 'Malanville', 'neighborhood' => 'Centre', 'phone' => '+22923671010', 'latitude' => 11.8680, 'longitude' => 3.3860],
+
+            // === COUFFO ===
+            ['name' => 'Pharmacie de Dogbo', 'zone' => 'couffo', 'city' => 'Dogbo', 'neighborhood' => 'Centre', 'phone' => '+22922430101', 'latitude' => 6.7940, 'longitude' => 1.7860],
+            ['name' => 'Pharmacie de Aplahoue', 'zone' => 'couffo', 'city' => 'Aplahoue', 'neighborhood' => 'Centre', 'phone' => '+22922440101', 'latitude' => 6.9330, 'longitude' => 1.6860],
+
+            // === PLATEAU ===
+            ['name' => 'Pharmacie de Pobe', 'zone' => 'plateau', 'city' => 'Pobe', 'neighborhood' => 'Centre', 'phone' => '+22920340101', 'latitude' => 6.9810, 'longitude' => 2.6660],
+            ['name' => 'Pharmacie de Ketou', 'zone' => 'plateau', 'city' => 'Ketou', 'neighborhood' => 'Centre', 'phone' => '+22920350101', 'latitude' => 7.3630, 'longitude' => 2.6010],
         ];
 
         foreach ($pharmacies as $data) {
@@ -68,38 +84,45 @@ final class PharmacySeeder extends Seeder
             );
         }
 
-        // Seed exemple de tours de garde (semaine courante + prochaine)
-        $pharmacyIds = Pharmacy::where('zone', 'littoral')->pluck('id')->all();
+        // Tours de garde (semaine courante + prochaine) pour toutes les zones
+        $currentWeekStart = now()->startOfWeek();
+        $currentWeekEnd = now()->endOfWeek();
+        $nextWeekStart = now()->addWeek()->startOfWeek();
+        $nextWeekEnd = now()->addWeek()->endOfWeek();
 
-        if (count($pharmacyIds) >= 5) {
-            $currentWeekStart = now()->startOfWeek();
-            $currentWeekEnd = now()->endOfWeek();
-            $nextWeekStart = now()->addWeek()->startOfWeek();
-            $nextWeekEnd = now()->addWeek()->endOfWeek();
-
-            // Semaine courante: 5 pharmacies de garde
-            $guardsThisWeek = array_slice($pharmacyIds, 0, 5);
-            foreach ($guardsThisWeek as $pid) {
+        // Littoral : 5 pharmacies de garde cette semaine, 5 differentes la semaine prochaine
+        $littoralIds = Pharmacy::where('zone', 'littoral')->pluck('id')->all();
+        if (count($littoralIds) >= 5) {
+            foreach (array_slice($littoralIds, 0, 5) as $pid) {
                 PharmacyGuard::updateOrCreate(
                     ['pharmacy_id' => $pid, 'start_date' => $currentWeekStart->toDateString()],
-                    [
-                        'end_date' => $currentWeekEnd->toDateString(),
-                        'zone' => 'littoral',
-                    ],
+                    ['end_date' => $currentWeekEnd->toDateString(), 'zone' => 'littoral'],
                 );
             }
-
-            // Semaine prochaine: 5 pharmacies differentes
-            $guardsNextWeek = array_slice($pharmacyIds, 5, 5);
-            foreach ($guardsNextWeek as $pid) {
+            foreach (array_slice($littoralIds, 5, 5) as $pid) {
                 PharmacyGuard::updateOrCreate(
                     ['pharmacy_id' => $pid, 'start_date' => $nextWeekStart->toDateString()],
-                    [
-                        'end_date' => $nextWeekEnd->toDateString(),
-                        'zone' => 'littoral',
-                    ],
+                    ['end_date' => $nextWeekEnd->toDateString(), 'zone' => 'littoral'],
                 );
             }
+        }
+
+        // Autres zones : 1 pharmacie de garde cette semaine, 1 la semaine prochaine
+        $otherZones = ['atlantique', 'oueme', 'borgou', 'zou', 'atacora', 'donga', 'mono', 'collines', 'alibori', 'couffo', 'plateau'];
+        foreach ($otherZones as $zone) {
+            $ids = Pharmacy::where('zone', $zone)->pluck('id')->all();
+            if (count($ids) === 0) {
+                continue;
+            }
+            PharmacyGuard::updateOrCreate(
+                ['pharmacy_id' => $ids[0], 'start_date' => $currentWeekStart->toDateString()],
+                ['end_date' => $currentWeekEnd->toDateString(), 'zone' => $zone],
+            );
+            $nextId = count($ids) >= 2 ? $ids[1] : $ids[0];
+            PharmacyGuard::updateOrCreate(
+                ['pharmacy_id' => $nextId, 'start_date' => $nextWeekStart->toDateString()],
+                ['end_date' => $nextWeekEnd->toDateString(), 'zone' => $zone],
+            );
         }
     }
 }

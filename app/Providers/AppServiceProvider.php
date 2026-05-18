@@ -66,5 +66,18 @@ class AppServiceProvider extends ServiceProvider
                     ->update(['phone_number' => '116']);
             }
         }
+
+        // Re-seed pharmacy guards if expired or incomplete (some zones missing)
+        $activeZoneCount = \DB::table('pharmacy_guards')
+            ->whereDate('end_date', '>=', now()->toDateString())
+            ->distinct()
+            ->count('zone');
+
+        if ($activeZoneCount < 8) {
+            Artisan::call('db:seed', [
+                '--class' => \App\Modules\Pharmacy\Database\Seeders\PharmacySeeder::class,
+                '--force' => true,
+            ]);
+        }
     }
 }

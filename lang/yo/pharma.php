@@ -17,4 +17,9 @@ return [
     'pharmacies' => 'ile itaja oogun',
     'location_denied' => 'Ipò kọ̀',
     'location_hint' => 'Mu ipò ṣiṣẹ́ nínú ètò fóònù rẹ',
+    'location_permission_title' => 'Gba laaye ipo?',
+    'location_permission_desc' => 'Lati wa ile elegbogi ti o sunmo, Lafia nilo ipo re.',
+    'location_perm_point1' => 'Ipo re ni a lo nikan lati wonu ijinna si ile elegbogi.',
+    'location_perm_point2' => 'A ko ran tabi pamo re lori olupese wa.',
+    'location_perm_point3' => 'O le fagilee igbanilaaye yii nigbakugba ninu eto foonu re.',
 ];

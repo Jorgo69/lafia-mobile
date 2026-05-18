@@ -4,6 +4,7 @@
     $cat = \App\Modules\Emergency\Enums\EmergencyCategory::tryFrom($category);
     $iconName = $cat?->icon() ?? 'phone';
     $colorClass = $cat?->iconColorClass() ?? 'text-gray-600 bg-gray-100';
+    $callScheme = app(\App\Services\Settings\SettingsService::class)->get('call_mode', 'dial') === 'direct' ? 'tel-direct' : 'tel';
 @endphp
 
 <div class="relative w-full rounded-2xl bg-surface border border-gray-100 shadow-sm
@@ -19,7 +20,7 @@
 
     {{-- Call zone --}}
     <a
-        href="tel:{{ $phone }}"
+        href="{{ $callScheme }}:{{ $phone }}"
         @click.throttle.1000ms
         class="w-full flex flex-col items-center gap-2 py-4 min-h-[88px] press-feedback"
     >

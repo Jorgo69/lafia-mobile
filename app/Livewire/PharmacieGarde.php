@@ -21,6 +21,7 @@ final class PharmacieGarde extends Component
     public ?float $userLat = null;
     public ?float $userLng = null;
     public string $searchQuery = '';
+    public bool $showLocationRationale = false;
 
     public function mount(): void
     {
@@ -41,8 +42,41 @@ final class PharmacieGarde extends Component
         if ($m === null) {
             return;
         }
+
+        if ($m === PharmacyViewMode::NEAREST && $this->userLat === null) {
+            $consentGiven = app(SettingsService::class)->get('location_consent', '0') === '1';
+            if (!$consentGiven) {
+                $this->showLocationRationale = true;
+                return;
+            }
+            // Consentement deja donne : switcher et demander directement
+            $this->viewMode = $m;
+            app(SettingsService::class)->set('pharma_view', $mode);
+            $this->dispatch('request-location');
+            return;
+        }
+
         $this->viewMode = $m;
         app(SettingsService::class)->set('pharma_view', $mode);
+    }
+
+    public function confirmLocationRequest(): void
+    {
+        $this->showLocationRationale = false;
+        app(SettingsService::class)->set('location_consent', '1');
+        $this->viewMode = PharmacyViewMode::NEAREST;
+        app(SettingsService::class)->set('pharma_view', PharmacyViewMode::NEAREST->value);
+        $this->dispatch('request-location');
+    }
+
+    public function cancelLocationRequest(): void
+    {
+        $this->showLocationRationale = false;
+    }
+
+    public function handleLocationDenied(): void
+    {
+        $this->dispatch('toast', message: __('pharma.location_denied'), variant: 'warning');
     }
 
     public function setUserLocation(float $lat, float $lng): void
@@ -50,6 +84,7 @@ final class PharmacieGarde extends Component
         $this->userLat = $lat;
         $this->userLng = $lng;
         $this->viewMode = PharmacyViewMode::NEAREST;
+        app(SettingsService::class)->set('pharma_view', PharmacyViewMode::NEAREST->value);
     }
 
     /**
@@ -64,8 +99,8 @@ final class PharmacieGarde extends Component
         return Pharmacy::where('zone', $this->activeZone)
             ->where('is_active', true)
             ->whereHas('guards', fn ($q) => $q
-                ->where('start_date', '<=', $today)
-                ->where('end_date', '>=', $today))
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today))
             ->orderBy('name')
             ->get();
     }
@@ -107,8 +142,8 @@ final class PharmacieGarde extends Component
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->whereHas('guards', fn ($q) => $q
-                ->where('start_date', '<=', $today)
-                ->where('end_date', '>=', $today))
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today))
             ->get()
             ->map(fn (Pharmacy $p) => [
                 'pharmacy' => $p,
@@ -129,8 +164,8 @@ final class PharmacieGarde extends Component
         return Pharmacy::where('zone', $this->activeZone)
             ->where('is_active', true)
             ->whereHas('guards', fn ($q) => $q
-                ->where('start_date', '<=', $nextWeekEnd)
-                ->where('end_date', '>=', $nextWeekStart))
+                ->whereDate('start_date', '<=', $nextWeekEnd)
+                ->whereDate('end_date', '>=', $nextWeekStart))
             ->orderBy('name')
             ->get();
     }

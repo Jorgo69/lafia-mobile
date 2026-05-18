@@ -17,4 +17,9 @@ return [
     'pharmacies' => 'pharmacy(ies)',
     'location_denied' => 'Location denied',
     'location_hint' => 'Enable location in your phone settings',
+    'location_permission_title' => 'Allow location access?',
+    'location_permission_desc' => 'To find the nearest on-duty pharmacies, Lafia needs access to your location.',
+    'location_perm_point1' => 'Your location is only used to calculate distances to pharmacies.',
+    'location_perm_point2' => 'It is never sent to or stored on our servers.',
+    'location_perm_point3' => 'You can revoke this access at any time in your phone settings.',
 ];

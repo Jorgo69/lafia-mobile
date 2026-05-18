@@ -34,7 +34,8 @@
 
             {{-- Call button --}}
             @if($pharmacy->phone)
-                <a href="tel:{{ $pharmacy->phone }}" class="flex-shrink-0 bg-success-500 text-white p-2 rounded-xl press-feedback">
+                @php $callScheme = app(\App\Services\Settings\SettingsService::class)->get('call_mode', 'dial') === 'direct' ? 'tel-direct' : 'tel'; @endphp
+                <a href="{{ $callScheme }}:{{ $pharmacy->phone }}" class="flex-shrink-0 bg-success-500 text-white p-2 rounded-xl press-feedback">
                     <x-icon name="phone" class="w-5 h-5" />
                 </a>
             @endif

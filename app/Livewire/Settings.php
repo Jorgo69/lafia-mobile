@@ -21,6 +21,8 @@ final class Settings extends Component
     public LockInterval $lockInterval;
     public bool $directCall;
     public bool $showDirectCallRationale = false;
+    public bool $locationConsent;
+    public bool $showLocationRationale = false;
     public bool $showRollbackSuccess = false;
 
     /** @var array<string, string> */
@@ -53,6 +55,7 @@ final class Settings extends Component
         $this->lockEnabled = $settings->isLockEnabled();
         $this->lockInterval = LockInterval::tryFrom($settings->get('lock_interval', '1') ?? '1') ?? LockInterval::ONE_MIN;
         $this->directCall = $settings->get('call_mode', 'dial') === 'direct';
+        $this->locationConsent = $settings->get('location_consent', '0') === '1';
     }
 
     public function toggleDarkMode(): void
@@ -107,6 +110,39 @@ final class Settings extends Component
         if (!$granted) {
             $this->directCall = false;
             app(SettingsService::class)->set('call_mode', 'dial');
+        }
+    }
+
+    public function toggleLocationConsent(): void
+    {
+        if (!$this->locationConsent) {
+            $this->showLocationRationale = true;
+        } else {
+            $this->locationConsent = false;
+            app(SettingsService::class)->set('location_consent', '0');
+        }
+    }
+
+    public function confirmLocationConsent(): void
+    {
+        $this->showLocationRationale = false;
+        $this->dispatch('request-location-permission');
+    }
+
+    public function cancelLocationConsent(): void
+    {
+        $this->showLocationRationale = false;
+    }
+
+    public function handleLocationPermissionResult(bool $granted): void
+    {
+        if ($granted) {
+            $this->locationConsent = true;
+            app(SettingsService::class)->set('location_consent', '1');
+        } else {
+            $this->locationConsent = false;
+            app(SettingsService::class)->set('location_consent', '0');
+            $this->dispatch('toast', message: __('pharma.location_denied'), variant: 'warning');
         }
     }
 

@@ -83,31 +83,9 @@
         {{-- PROCHES --}}
         @elseif($viewMode === PharmacyViewMode::NEAREST)
             @if($userLat === null)
-                <div
-                    x-data="{ loading: true, failed: false }"
-                    x-init="
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(
-                                (pos) => { loading = false; $wire.setUserLocation(pos.coords.latitude, pos.coords.longitude); },
-                                () => { loading = false; failed = true; }
-                            );
-                        } else { loading = false; failed = true; }
-                    "
-                    class="text-center py-12 text-gray-400"
-                >
-                    <template x-if="loading">
-                        <div>
-                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 animate-pulse" />
-                            <p class="text-sm">{{ __('pharma.enable_location') }}</p>
-                        </div>
-                    </template>
-                    <template x-if="failed">
-                        <div>
-                            <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 text-danger-400" />
-                            <p class="text-sm text-danger-500">{{ __('pharma.location_denied') }}</p>
-                            <p class="text-xs mt-1 opacity-70">{{ __('pharma.location_hint') }}</p>
-                        </div>
-                    </template>
+                <div class="text-center py-12 text-gray-400">
+                    <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 opacity-50 animate-pulse" />
+                    <p class="text-sm">{{ __('pharma.enable_location') }}</p>
                 </div>
             @elseif($this->nearest->isNotEmpty())
                 <div class="space-y-2">
@@ -128,4 +106,72 @@
         @endif
 
     </div>
+
+    {{-- Dialogue de consentement : Localisation --}}
+    @if($showLocationRationale)
+        <div class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center">
+            <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl px-6 pt-6 pb-safe-tab">
+
+                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
+                        <x-icon name="map-pin" class="w-5 h-5 text-primary-600" />
+                    </div>
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('pharma.location_permission_title') }}</h3>
+                </div>
+
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {{ __('pharma.location_permission_desc') }}
+                </p>
+
+                <ul class="space-y-2 mb-5">
+                    <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <x-icon name="check-circle" class="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />
+                        {{ __('pharma.location_perm_point1') }}
+                    </li>
+                    <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <x-icon name="check-circle" class="w-4 h-4 text-success-500 flex-shrink-0 mt-0.5" />
+                        {{ __('pharma.location_perm_point2') }}
+                    </li>
+                    <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        <x-icon name="shield-check" class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                        {{ __('pharma.location_perm_point3') }}
+                    </li>
+                </ul>
+
+                <div class="flex gap-3">
+                    <x-btn variant="ghost" wire:click="cancelLocationRequest" class="flex-1">
+                        {{ __('common.cancel') }}
+                    </x-btn>
+                    <x-btn variant="primary" wire:click="confirmLocationRequest" class="flex-1">
+                        <x-icon name="map-pin" class="w-4 h-4" />
+                        {{ __('common.authorize') }}
+                    </x-btn>
+                </div>
+
+            </div>
+        </div>
+    @endif
+
 </x-mobile-page>
+
+@script
+<script>
+    $wire.on('request-location', () => {
+        if (!navigator.geolocation) {
+            $wire.handleLocationDenied();
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                $wire.setUserLocation(pos.coords.latitude, pos.coords.longitude);
+            },
+            () => {
+                $wire.handleLocationDenied();
+            },
+            { timeout: 15000, maximumAge: 60000 }
+        );
+    });
+</script>
+@endscript

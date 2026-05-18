@@ -17,4 +17,9 @@ return [
     'pharmacies' => 'pharmacie(s)',
     'location_denied' => 'Localisation refusee',
     'location_hint' => 'Activez la localisation dans les parametres de votre telephone',
+    'location_permission_title' => 'Autoriser la localisation ?',
+    'location_permission_desc' => 'Pour trouver les pharmacies de garde les plus proches, Lafia a besoin d\'acceder a votre position.',
+    'location_perm_point1' => 'Votre position sert uniquement a calculer les distances avec les pharmacies.',
+    'location_perm_point2' => 'Elle n\'est jamais envoyee ni stockee sur nos serveurs.',
+    'location_perm_point3' => 'Vous pouvez revoquer cet acces a tout moment dans les parametres de votre telephone.',
 ];
